@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing";
-
 import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import NewTask from "./pages/NewTask";
 
 import Dexie from "dexie";
 
 import { useEffect, useState } from "react";
-import Login from "./pages/Login";
 
 const App = () => {
     const [db, setDb] = useState<Dexie>();
@@ -36,6 +37,9 @@ const App = () => {
                     <Route path="/register" element={<Register />} />
                     {/* @ts-ignore */}
                     <Route path="/login" element={<Login db={db} />} />
+                    <Route path="/home" element={<Home />} /> 
+                    {/* @ts-ignore */}
+                    <Route path="/newtask" element={<NewTask db={db} />} />
                 </Routes>
             </BrowserRouter>
         </>

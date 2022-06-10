@@ -1,0 +1,12 @@
+.parent {
+    height: 100%;
+    padding: 1rem;
+}
+
+.tags {
+    gap: .5rem;
+    display: flex;
+    overflow-x: auto;
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+}

@@ -3,11 +3,10 @@ import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { createSalt, deriveKeypair } from "src/utils/aes";
+import { deriveKeypair } from "src/utils/aes";
 
 // @ts-ignore
 import PBKDF2 from "crypto-js/pbkdf2";
-import { uint8ArrayToBase64 } from "src/utils/b64";
 
 import type { Dexie } from "dexie";
 

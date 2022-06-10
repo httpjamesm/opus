@@ -26,7 +26,29 @@ input:focus {
 	outline: none;
 }
 
-input::-webkit-input-placeholder {
+textarea {
+    border: 2px solid black;
+    font-size: 1.5rem;
+	font-family: Inter, sans-serif;
+
+    margin-top: 1rem;
+
+    padding: .5rem;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+    
+    width: 100%;
+
+    height: 10rem;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 	color: #989898;
 	font-size: 1.5rem;
 	font-weight: bold;
