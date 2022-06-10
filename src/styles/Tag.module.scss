@@ -13,3 +13,11 @@
     color: #6D6D6D;
     margin-left: .25rem;
 }
+
+.editingContainer {
+    @extend .container;
+
+    height: fit-content !important;
+    margin: 0;
+    font-size: 1rem;
+}

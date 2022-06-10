@@ -7,16 +7,20 @@ import { Task } from "src/interfaces/task";
 import TaskComponent from "../components/Task";
 
 import { db } from "src/utils/db";
+import CreateTag from "src/components/CreateTag";
+import { Tag as TagInterface } from "src/interfaces/tag";
 
 const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
 
+    const [tags, setTags] = useState<TagInterface[]>([]);
+
     const [key, setKey] = useState<CryptoKey>();
+
+    const [selectedTag, setSelectedTag] = useState<number>(0);
 
     const getKey = async () => {
         // retrieve key from db
-
-        console.log("getting key");
 
         if (key) return;
 
@@ -24,17 +28,18 @@ const Home = () => {
         setKey(dbKey.key);
     };
 
-    const getTasks = async () => {
-        const request = await fetch(
-            `${process.env.REACT_APP_API_URL}/task/list`,
-            {
-                headers: {
-                    authorization: window.localStorage.getItem(
-                        "session"
-                    ) as string,
-                },
-            }
-        );
+    const getTasks = async (selectTag: number = 0) => {
+        setSelectedTag(selectTag);
+
+        const uri = selectTag
+            ? `${process.env.REACT_APP_API_URL}/task/list?tag=${selectTag}`
+            : `${process.env.REACT_APP_API_URL}/task/list`;
+
+        const request = await fetch(uri, {
+            headers: {
+                authorization: window.localStorage.getItem("session") as string,
+            },
+        });
 
         const response: {
             success: boolean;
@@ -46,12 +51,35 @@ const Home = () => {
         }
     };
 
+    const getTags = async () => {
+        const request = await fetch(
+            `${process.env.REACT_APP_API_URL}/tag/list`,
+            {
+                headers: {
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
+                },
+            }
+        );
+
+        const response: {
+            success: boolean;
+            data: TagInterface[];
+        } = await request.json();
+
+        if (response.success) {
+            setTags(response.data);
+        }
+    };
+
     useEffect(() => {
         init();
     }, []);
 
     const init = async () => {
         await getKey();
+        await getTags();
         await getTasks();
     };
 
@@ -70,24 +98,23 @@ const Home = () => {
                     </button>
                 </div>
                 <div className={styles.tags}>
-                    <Tag
-                        selected={true}
-                        name="Garden"
-                        color="#84FFB5"
-                        count={4}
-                    />
-                    <Tag
-                        selected={false}
-                        name="Garden"
-                        color="#84FFB5"
-                        count={4}
-                    />
-                    <Tag
-                        selected={false}
-                        name="Garden"
-                        color="#84FFB5"
-                        count={4}
-                    />
+                    <CreateTag cryptoKey={key as CryptoKey} />
+                    {tags.map((tagObject) => (
+                        <Tag
+                            cryptoKey={key as CryptoKey}
+                            selected={selectedTag === tagObject.id}
+                            tag={tagObject}
+                            onClick={() => {
+                                if (selectedTag === tagObject.id) {
+                                    // if tag is selected, then set to 0
+                                    setSelectedTag(0);
+                                    getTasks(0);
+                                    return;
+                                }
+                                getTasks(tagObject.id);
+                            }}
+                        />
+                    ))}
                 </div>
                 <h2>Recurring</h2>
                 <Check selected={false} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { encrypt } from "src/utils/aes";
 import Check from "../components/Check";
 import styles from "../styles/NewTask.module.scss";
@@ -8,10 +8,29 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { db } from "src/utils/db";
 
+import { Tag as TagInterface } from "src/interfaces/tag";
+
+import Tag from "../components/Tag";
+
 const NewTask = () => {
     const [name, setName] = useState<string>("");
 
     const [desc, setDesc] = useState<string>("");
+
+    const [tags, setTags] = useState<TagInterface[]>([]);
+
+    const [key, setKey] = useState<CryptoKey>();
+
+    const [tagsToAssign, setTagsToAssign] = useState<number[]>([]);
+
+    const getKey = async () => {
+        // retrieve key from db
+
+        if (key) return;
+
+        const dbKey = await db.table("keys").limit(1).first();
+        setKey(dbKey.key);
+    };
 
     const createTask = async () => {
         // encrypt name and description
@@ -72,9 +91,29 @@ const NewTask = () => {
         const response: {
             success: boolean;
             message: string;
+            data: number;
         } = await request.json();
 
         if (response.success) {
+            // assign tags if there are any to assign
+            if (tagsToAssign.length) {
+                await Promise.all(
+                    tagsToAssign.map(async (tagId) => {
+                        await fetch(
+                            `${process.env.REACT_APP_API_URL}/tag/assign?tag=${tagId}&task=${response.data}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    authorization: window.localStorage.getItem(
+                                        "session"
+                                    ) as string,
+                                },
+                            }
+                        );
+                    })
+                );
+            }
+
             toast.success("Successfully created task");
             // wait 1 s
             setTimeout(() => {
@@ -84,6 +123,37 @@ const NewTask = () => {
         }
 
         toast.error(response.message);
+    };
+
+    const getTags = async () => {
+        const request = await fetch(
+            `${process.env.REACT_APP_API_URL}/tag/list`,
+            {
+                headers: {
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
+                },
+            }
+        );
+
+        const response: {
+            success: boolean;
+            data: TagInterface[];
+        } = await request.json();
+
+        if (response.success) {
+            setTags(response.data);
+        }
+    };
+
+    useEffect(() => {
+        init();
+    }, []);
+
+    const init = async () => {
+        await getKey();
+        await getTags();
     };
 
     return (
@@ -114,6 +184,29 @@ Maybe evergreen?`}
                     <p className={styles.desc}>Due Date</p>
                 </div>
                 <h2>Tags</h2>
+                {tags.map((tagObject) => (
+                    <Tag
+                        cryptoKey={key as CryptoKey}
+                        key={tagObject.id}
+                        tag={tagObject}
+                        selected={tagsToAssign.includes(tagObject.id)}
+                        onClick={() => {
+                            if (!tagsToAssign.includes(tagObject.id)) {
+                                setTagsToAssign([
+                                    ...tagsToAssign,
+                                    tagObject.id,
+                                ]);
+                            } else {
+                                // remove tag
+                                setTagsToAssign(
+                                    tagsToAssign.filter(
+                                        (tag) => tag !== tagObject.id
+                                    )
+                                );
+                            }
+                        }}
+                    />
+                ))}
                 <button className={styles.objectiveButton} onClick={createTask}>
                     Done
                 </button>
