@@ -8,9 +8,9 @@ import { deriveKeypair } from "src/utils/aes";
 // @ts-ignore
 import PBKDF2 from "crypto-js/pbkdf2";
 
-import type { Dexie } from "dexie";
+import { db } from "src/utils/db";
 
-const Login = ({ db }: { db: Dexie }) => {
+const Login = () => {
     const [username, setUsername] = useState<string>("");
 
     const [password, setPassword] = useState<string>("");

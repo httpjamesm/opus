@@ -3,12 +3,12 @@ import { encrypt } from "src/utils/aes";
 import Check from "../components/Check";
 import styles from "../styles/NewTask.module.scss";
 
-import type { Dexie } from "dexie";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const NewTask = ({ db }: { db: Dexie }) => {
+import { db } from "src/utils/db";
+
+const NewTask = () => {
     const [name, setName] = useState<string>("");
 
     const [desc, setDesc] = useState<string>("");
@@ -48,7 +48,9 @@ const NewTask = ({ db }: { db: Dexie }) => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    authorization: window.localStorage.getItem("session") as string,
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
                 },
                 body: JSON.stringify({
                     name: {
