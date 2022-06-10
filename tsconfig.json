@@ -20,17 +20,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "paths": {
-        "@pages/*": [
-            "src/pages/*.tsx",
-        ],
-        "@styles/*": [
-            "src/styles/*.scss",
-        ],
-        "@components/*": [
-            "src/components/*.tsx",
-        ]
-    }
+    "downlevelIteration": true
   },
   "include": [
     "src/**/*"
