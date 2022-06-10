@@ -16,7 +16,7 @@ const Home = () => {
     const getKey = async () => {
         // retrieve key from db
 
-        console.log("getting key")
+        console.log("getting key");
 
         if (key) return;
 
@@ -60,7 +60,15 @@ const Home = () => {
             <div className={styles.parent}>
                 <h1>Home</h1>
                 <hr />
-                <h2>Tags</h2>
+                <div className={styles.tagsParent}>
+                    <h2>Tags</h2>
+                    <button
+                        className={styles.newTaskButton}
+                        onClick={() => (window.location.href = "/newtask")}
+                    >
+                        New Task
+                    </button>
+                </div>
                 <div className={styles.tags}>
                     <Tag
                         selected={true}

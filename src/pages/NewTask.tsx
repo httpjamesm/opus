@@ -76,6 +76,10 @@ const NewTask = () => {
 
         if (response.success) {
             toast.success("Successfully created task");
+            // wait 1 s
+            setTimeout(() => {
+                window.location.href = "/home";
+            }, 1000);
             return;
         }
 

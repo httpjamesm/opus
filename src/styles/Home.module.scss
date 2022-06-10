@@ -10,3 +10,22 @@
     margin-top: .5rem;
     margin-bottom: 1rem;
 }
+
+.newTaskButton {
+    width: 10rem;
+    height: 2.5rem;
+    border-radius: 500px;
+    background-color: #0249FF;
+    font-weight: bold;
+    color: white;
+    border: none;
+    font-size: 1.25rem; 
+    font-family: Inter, sans-serif;
+    box-shadow: 0px 24px 48px 0 rgba(0, 0, 0, 0.16);
+}
+
+.tagsParent {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
