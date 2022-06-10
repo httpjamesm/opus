@@ -8,8 +8,11 @@ import { createSalt } from "src/utils/aes";
 // @ts-ignore
 import PBKDF2 from "crypto-js/pbkdf2";
 import { uint8ArrayToBase64 } from "src/utils/b64";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState<string>("");
 
     const [password, setPassword] = useState<string>("");
@@ -29,7 +32,7 @@ const Register = () => {
             iterations: 1000,
         }).toString();
 
-        const keySalt = await uint8ArrayToBase64(await createSalt(16))
+        const keySalt = await uint8ArrayToBase64(await createSalt(16));
 
         const request = await fetch(
             `${process.env.REACT_APP_API_URL}/auth/register`,
@@ -47,10 +50,12 @@ const Register = () => {
             }
         );
 
-        const response: { success: boolean; message: string } = await request.json();
+        const response: { success: boolean; message: string } =
+            await request.json();
 
         if (response.success) {
             toast.success("Successfully registered");
+            navigate("/login", { replace: true });
         } else {
             toast.error(response.message);
         }

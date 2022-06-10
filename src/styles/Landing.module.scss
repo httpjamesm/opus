@@ -1,7 +1,7 @@
 .parent {
     height: 100%;
     width: 100%;
-    background-image: url('../assets/blue-splash.jpg');
+    background-image: url("../assets/blue-splash.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-blend-mode: multiply;
@@ -62,4 +62,14 @@
     box-shadow: 0px 24px 48px 0 rgba(0, 0, 0, 0.16);
     color: white;
     margin-top: 3rem;
+}
+
+.metaText {
+    font-size: 1.5rem;
+
+    .loginText {
+        color: #9d9bff;
+        font-weight: bold;
+        text-decoration: underline;
+    }
 }

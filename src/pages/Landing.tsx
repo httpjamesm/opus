@@ -1,5 +1,6 @@
 import styles from "../styles/Landing.module.scss";
 import Check from "../components/Check";
+import { Link } from "react-router-dom";
 
 const Landing = () => {
     const features = [
@@ -24,7 +25,17 @@ const Landing = () => {
                             </div>
                         ))}
                     </div>
-                    <button className={styles.bigButton}>Get Started</button>
+                    <Link to="/register">
+                        <button className={styles.bigButton}>
+                            Get Started
+                        </button>
+                    </Link>
+                    <p className={styles.metaText}>
+                        Or{" "}
+                        <Link to="/login">
+                            <span className={styles.loginText}>login</span>
+                        </Link>
+                    </p>
                 </div>
             </div>
         </>

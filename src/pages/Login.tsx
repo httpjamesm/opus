@@ -10,7 +10,11 @@ import PBKDF2 from "crypto-js/pbkdf2";
 
 import { db } from "src/utils/db";
 
+import { useNavigate } from "react-router-dom";
+
 const Login = () => {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState<string>("");
 
     const [password, setPassword] = useState<string>("");
@@ -76,6 +80,8 @@ const Login = () => {
         await db.table("keys").add({
             key: derivedKey,
         });
+
+        navigate('/home', { replace: true });
     };
 
     return (

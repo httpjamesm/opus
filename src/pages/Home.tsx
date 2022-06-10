@@ -13,6 +13,7 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import Slideover from "src/components/Slideover";
+import { Link } from "react-router-dom";
 
 const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -98,12 +99,11 @@ const Home = () => {
                 <hr />
                 <div className={styles.tagsParent}>
                     <h2>Tags</h2>
-                    <button
-                        className={styles.newTaskButton}
-                        onClick={() => (window.location.href = "/newtask")}
-                    >
-                        New Task
-                    </button>
+                    <Link to="/newtask">
+                        <button className={styles.newTaskButton}>
+                            New Task
+                        </button>
+                    </Link>
                 </div>
                 <div className={styles.tags}>
                     <CreateTag

@@ -12,7 +12,11 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 
 import Tag from "../components/Tag";
 
+import { useNavigate } from "react-router-dom";
+
 const NewTask = () => {
+    const navigate = useNavigate();
+
     const [name, setName] = useState<string>("");
 
     const [desc, setDesc] = useState<string>("");
@@ -34,6 +38,11 @@ const NewTask = () => {
 
     const createTask = async () => {
         // encrypt name and description
+
+        if (!name) {
+            toast.error("Name is required");
+            return;
+        }
 
         const enc = new TextEncoder();
 
@@ -117,7 +126,7 @@ const NewTask = () => {
             toast.success("Successfully created task");
             // wait 1 s
             setTimeout(() => {
-                window.location.href = "/home";
+                navigate('/home', { replace: true });
             }, 1000);
             return;
         }
