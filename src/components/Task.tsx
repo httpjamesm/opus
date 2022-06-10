@@ -13,6 +13,10 @@ const TaskComponent = ({
     const [decryptedName, setDecryptedName] = useState<string>("");
     const [decryptedDesc, setDecryptedDesc] = useState<string>("");
 
+    const [isCompleted, setIsCompleted] = useState<boolean>(
+        task.completed || false
+    );
+
     const init = async () => {
         // decrypt name and desc
         const decryptedName = await decrypt(
@@ -35,6 +39,31 @@ const TaskComponent = ({
         init();
     }, []);
 
+    const markCompletion = async () => {
+        setIsCompleted(!isCompleted);
+
+        // send req
+        const request = await fetch(
+            `${process.env.REACT_APP_API_URL}/task/mark?id=${task.id}&mark=${
+                isCompleted ? "0" : "1"
+            }`,
+            {
+                method: "PATCH",
+                headers: {
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
+                },
+            }
+        );
+
+        const response: { success: boolean } = await request.json();
+
+        if (!response.success) {
+            setIsCompleted(!isCompleted);
+        }
+    };
+
     return (
         <>
             <div
@@ -43,7 +72,7 @@ const TaskComponent = ({
                     alignItems: "center",
                 }}
             >
-                <Check selected={task.completed || false} />
+                <Check selected={isCompleted} onClick={markCompletion} />
                 <p
                     style={{
                         marginLeft: ".5rem",
