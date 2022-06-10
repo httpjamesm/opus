@@ -33,3 +33,10 @@
 
     margin-top: 1rem;
 }
+
+.tags {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}

@@ -184,29 +184,31 @@ Maybe evergreen?`}
                     <p className={styles.desc}>Due Date</p>
                 </div>
                 <h2>Tags</h2>
-                {tags.map((tagObject) => (
-                    <Tag
-                        cryptoKey={key as CryptoKey}
-                        key={tagObject.id}
-                        tag={tagObject}
-                        selected={tagsToAssign.includes(tagObject.id)}
-                        onClick={() => {
-                            if (!tagsToAssign.includes(tagObject.id)) {
-                                setTagsToAssign([
-                                    ...tagsToAssign,
-                                    tagObject.id,
-                                ]);
-                            } else {
-                                // remove tag
-                                setTagsToAssign(
-                                    tagsToAssign.filter(
-                                        (tag) => tag !== tagObject.id
-                                    )
-                                );
-                            }
-                        }}
-                    />
-                ))}
+                <div className={styles.tags}>
+                    {tags.map((tagObject) => (
+                        <Tag
+                            cryptoKey={key as CryptoKey}
+                            key={tagObject.id}
+                            tag={tagObject}
+                            selected={tagsToAssign.includes(tagObject.id)}
+                            onClick={() => {
+                                if (!tagsToAssign.includes(tagObject.id)) {
+                                    setTagsToAssign([
+                                        ...tagsToAssign,
+                                        tagObject.id,
+                                    ]);
+                                } else {
+                                    // remove tag
+                                    setTagsToAssign(
+                                        tagsToAssign.filter(
+                                            (tag) => tag !== tagObject.id
+                                        )
+                                    );
+                                }
+                            }}
+                        />
+                    ))}
+                </div>
                 <button className={styles.objectiveButton} onClick={createTask}>
                     Done
                 </button>

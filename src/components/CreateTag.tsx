@@ -5,7 +5,13 @@ import styles from "../styles/Tag.module.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const CreateTag = ({ cryptoKey }: { cryptoKey: CryptoKey }) => {
+const CreateTag = ({
+    cryptoKey,
+    uponCreation,
+}: {
+    cryptoKey: CryptoKey;
+    uponCreation: () => void;
+}) => {
     const [editing, setEditing] = useState<boolean>(false);
 
     const [name, setName] = useState<string>("");
@@ -46,6 +52,7 @@ const CreateTag = ({ cryptoKey }: { cryptoKey: CryptoKey }) => {
         if (response.success) {
             toast.success(response.message);
             setEditing(false);
+            uponCreation();
             return;
         }
 

@@ -98,7 +98,12 @@ const Home = () => {
                     </button>
                 </div>
                 <div className={styles.tags}>
-                    <CreateTag cryptoKey={key as CryptoKey} />
+                    <CreateTag
+                        cryptoKey={key as CryptoKey}
+                        uponCreation={() => {
+                            getTags();
+                        }}
+                    />
                     {tags.map((tagObject) => (
                         <Tag
                             cryptoKey={key as CryptoKey}
