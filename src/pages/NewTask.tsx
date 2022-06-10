@@ -48,6 +48,7 @@ const NewTask = ({ db }: { db: Dexie }) => {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    authorization: window.localStorage.getItem("session") as string,
                 },
                 body: JSON.stringify({
                     name: {
