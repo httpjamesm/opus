@@ -10,6 +10,10 @@ import { db } from "src/utils/db";
 import CreateTag from "src/components/CreateTag";
 import { Tag as TagInterface } from "src/interfaces/tag";
 
+import SlidingPane from "react-sliding-pane";
+import "react-sliding-pane/dist/react-sliding-pane.css";
+import Slideover from "src/components/Slideover";
+
 const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -18,6 +22,10 @@ const Home = () => {
     const [key, setKey] = useState<CryptoKey>();
 
     const [selectedTag, setSelectedTag] = useState<number>(0);
+
+    const [openSlideover, setOpenSlideover] = useState<boolean>(false);
+
+    const [selectedTask, setSelectedTask] = useState<Task>();
 
     const getKey = async () => {
         // retrieve key from db
@@ -127,12 +135,29 @@ const Home = () => {
                 <h2>General</h2>
                 {tasks.map((task) => (
                     <TaskComponent
+                        onClick={() => {
+                            setSelectedTask(task);
+                            setOpenSlideover(true);
+                        }}
                         key={task.id}
                         cryptoKey={key as CryptoKey}
                         task={task}
                     />
                 ))}
             </div>
+            <SlidingPane
+                isOpen={openSlideover}
+                title="Task Settings"
+                onRequestClose={() => {
+                    // triggered on "<" on left top click or on outside click
+                    setOpenSlideover(false);
+                }}
+            >
+                <Slideover
+                    cryptoKey={key as CryptoKey}
+                    task={selectedTask as Task}
+                />
+            </SlidingPane>
         </>
     );
 };

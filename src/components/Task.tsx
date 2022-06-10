@@ -6,9 +6,11 @@ import Check from "./Check";
 const TaskComponent = ({
     task,
     cryptoKey,
+    onClick,
 }: {
     task: Task;
     cryptoKey: CryptoKey;
+    onClick: () => void;
 }) => {
     const [decryptedName, setDecryptedName] = useState<string>("");
     const [decryptedDesc, setDecryptedDesc] = useState<string>("");
@@ -74,6 +76,7 @@ const TaskComponent = ({
             >
                 <Check selected={isCompleted} onClick={markCompletion} />
                 <p
+                    onClick={onClick}
                     style={{
                         marginLeft: ".5rem",
                         fontWeight: "bold",
