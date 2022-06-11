@@ -13,6 +13,7 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 import Tag from "../components/Tag";
 
 import { useNavigate } from "react-router-dom";
+import CreateTag from "src/components/CreateTag";
 
 const NewTask = () => {
     const navigate = useNavigate();
@@ -126,7 +127,7 @@ const NewTask = () => {
             toast.success("Successfully created task");
             // wait 1 s
             setTimeout(() => {
-                navigate('/home', { replace: true });
+                navigate("/home", { replace: true });
             }, 1000);
             return;
         }
@@ -194,6 +195,12 @@ Maybe evergreen?`}
                 </div>
                 <h2>Tags</h2>
                 <div className={styles.tags}>
+                    <CreateTag
+                        cryptoKey={key as CryptoKey}
+                        uponCreation={() => {
+                            getTags();
+                        }}
+                    />
                     {tags.map((tagObject) => (
                         <Tag
                             cryptoKey={key as CryptoKey}
