@@ -18,6 +18,8 @@ import { Link } from "react-router-dom";
 const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
 
+    const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
+
     const [tags, setTags] = useState<TagInterface[]>([]);
 
     const [key, setKey] = useState<CryptoKey>();
@@ -42,7 +44,7 @@ const Home = () => {
 
         const uri = selectTag
             ? `${process.env.REACT_APP_API_URL}/task/list?tag=${selectTag}`
-            : `${process.env.REACT_APP_API_URL}/task/list`;
+            : `${process.env.REACT_APP_API_URL}/task/list?tag=`;
 
         const request = await fetch(uri, {
             headers: {
@@ -57,6 +59,23 @@ const Home = () => {
 
         if (response.success) {
             setTasks(response.data);
+
+            const completedRequest = await fetch(uri + "&show_completed=1", {
+                headers: {
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
+                },
+            });
+
+            const completedResponse: {
+                success: boolean;
+                data: Task[];
+            } = await completedRequest.json();
+
+            if (completedResponse.success) {
+                setCompletedTasks(completedResponse.data);
+            }
         }
     };
 
@@ -135,6 +154,18 @@ const Home = () => {
                 <h2>Upcoming</h2>
                 <h2>General</h2>
                 {tasks.map((task) => (
+                    <TaskComponent
+                        onClick={() => {
+                            setSelectedTask(task);
+                            setOpenSlideover(true);
+                        }}
+                        key={task.id}
+                        cryptoKey={key as CryptoKey}
+                        task={task}
+                    />
+                ))}
+                <h2>Completed</h2>
+                {completedTasks.map((task) => (
                     <TaskComponent
                         onClick={() => {
                             setSelectedTask(task);
