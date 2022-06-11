@@ -20,6 +20,8 @@ const Home = () => {
 
     const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
 
+    const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
+
     const [tags, setTags] = useState<TagInterface[]>([]);
 
     const [key, setKey] = useState<CryptoKey>();
@@ -58,7 +60,19 @@ const Home = () => {
         } = await request.json();
 
         if (response.success) {
-            setTasks(response.data);
+            setTasks([]);
+            setCompletedTasks([]);
+            setUpcomingTasks([]);
+
+            await Promise.all(
+                response.data.map(async (task) => {
+                    if (task.dueDateCiphertext) {
+                        setUpcomingTasks([...upcomingTasks, task]);
+                        return;
+                    }
+                    setTasks([...tasks, task]);
+                })
+            );
 
             const completedRequest = await fetch(uri + "&show_completed=1", {
                 headers: {
@@ -117,7 +131,7 @@ const Home = () => {
                 <h1>Home</h1>
                 <hr />
                 <div className={styles.tagsParent}>
-                    <h2>Tags</h2>
+                    <h2 className={styles.sectionTitle}>Tags</h2>
                     <Link to="/newtask">
                         <button className={styles.newTaskButton}>
                             New Task
@@ -149,10 +163,21 @@ const Home = () => {
                         />
                     ))}
                 </div>
-                <h2>Recurring</h2>
+                <h2 className={styles.sectionTitle}>Recurring</h2>
                 <Check selected={false} />
-                <h2>Upcoming</h2>
-                <h2>General</h2>
+                <h2 className={styles.sectionTitle}>Upcoming</h2>
+                {upcomingTasks.map((task) => (
+                    <TaskComponent
+                        onClick={() => {
+                            setSelectedTask(task);
+                            setOpenSlideover(true);
+                        }}
+                        key={task.id}
+                        cryptoKey={key as CryptoKey}
+                        task={task}
+                    />
+                ))}
+                <h2 className={styles.sectionTitle}>General</h2>
                 {tasks.map((task) => (
                     <TaskComponent
                         onClick={() => {
@@ -164,7 +189,7 @@ const Home = () => {
                         task={task}
                     />
                 ))}
-                <h2>Completed</h2>
+                <h2 className={styles.sectionTitle}>Completed</h2>
                 {completedTasks.map((task) => (
                     <TaskComponent
                         onClick={() => {
