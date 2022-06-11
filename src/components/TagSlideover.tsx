@@ -8,6 +8,8 @@ import { decrypt, encrypt } from "src/utils/aes";
 
 import useSaveDebounce from "./SaveDebounce";
 
+import { CirclePicker } from "react-color";
+
 const TagSlideover = ({
     cryptoKey,
     tag,
@@ -22,6 +24,8 @@ const TagSlideover = ({
     const [cachedDecryptedName, setCachedDecryptedName] = useState<string>("");
 
     const [nameChanged, setNameChanged] = useState<boolean>(false);
+
+    const [color, setColor] = useState<string>(tag.color);
 
     const deleteTag = async () => {
         const request = await fetch(
@@ -86,7 +90,7 @@ const TagSlideover = ({
                     ciphertext: tag.nameCiphertext,
                     iv: tag.nameIV,
                 },
-                color: tag.color,
+                color,
             }),
         });
     };
@@ -97,7 +101,7 @@ const TagSlideover = ({
 
     useEffect(() => {
         saveTag();
-    }, [decryptedName]);
+    }, [decryptedName, color]);
 
     return (
         <>
@@ -111,6 +115,12 @@ const TagSlideover = ({
                     setDecryptedName(e.target.value);
                     setCachedDecryptedName(e.target.value);
                 }}
+            />
+            <h3>Color</h3>
+            <br />
+            <CirclePicker
+                color={color}
+                onChange={(color) => setColor(color.hex)}
             />
             <p
                 role="button"
