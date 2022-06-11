@@ -15,6 +15,9 @@ import Tag from "../components/Tag";
 import { useNavigate } from "react-router-dom";
 import CreateTag from "src/components/CreateTag";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 const NewTask = () => {
     const navigate = useNavigate();
 
@@ -27,6 +30,10 @@ const NewTask = () => {
     const [key, setKey] = useState<CryptoKey>();
 
     const [tagsToAssign, setTagsToAssign] = useState<number[]>([]);
+
+    const [dueDateEnabled, setDueDateEnabled] = useState<boolean>(false);
+    const [dueDate, setDueDate] = useState<Date>(new Date());
+    const [dueTime, setDueTime] = useState<string>("");
 
     const getKey = async () => {
         // retrieve key from db
@@ -70,6 +77,25 @@ const NewTask = () => {
 
         const encryptedDesc = await encrypt(enc.encode(desc), itemKey);
 
+        let dueDateEncrypted: string = "";
+        let dueDateIV: string = "";
+
+        if (dueDateEnabled) {
+            const dueDateEpoch: string = (
+                new Date(
+                    `${dueDate.toLocaleDateString()} ${dueTime}`
+                ).getTime() / 1000
+            ).toString();
+
+            const dueDateEncryptedObject = await encrypt(
+                enc.encode(dueDateEpoch),
+                itemKey
+            );
+
+            dueDateEncrypted = dueDateEncryptedObject.data;
+            dueDateIV = dueDateEncryptedObject.iv;
+        }
+
         // send req
         const request = await fetch(
             `${process.env.REACT_APP_API_URL}/task/new`,
@@ -93,6 +119,10 @@ const NewTask = () => {
                     key: {
                         ciphertext: encryptedKey.data,
                         iv: encryptedKey.iv,
+                    },
+                    due: {
+                        ciphertext: dueDateEncrypted,
+                        iv: dueDateIV,
                     },
                 }),
             }
@@ -190,9 +220,28 @@ Maybe evergreen?`}
                     <p className={styles.desc}>Recurring</p>
                 </div>
                 <div className={styles.settingGroup}>
-                    <Check selected={false} />
+                    <Check
+                        selected={dueDateEnabled}
+                        onClick={() => {
+                            setDueDateEnabled(!dueDateEnabled);
+                        }}
+                    />
                     <p className={styles.desc}>Due Date</p>
                 </div>
+                {dueDateEnabled && (
+                    <>
+                        <h4>Date</h4>
+                        <DatePicker
+                            selected={dueDate}
+                            onChange={(date: Date) => setDueDate(date)}
+                        />
+                        <h4>Time</h4>
+                        <input
+                            type="time"
+                            onChange={(e) => setDueTime(e.target.value)}
+                        />
+                    </>
+                )}
                 <h2>Tags</h2>
                 <div className={styles.tags}>
                     <CreateTag
