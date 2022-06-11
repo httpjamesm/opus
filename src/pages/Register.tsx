@@ -47,7 +47,6 @@ const Register = () => {
 
         const keySalt = await uint8ArrayToBase64(await createSalt(16));
 
-        // encrypt master key with user password
         const passwordKey = await deriveKeypair(password, keySalt);
 
         // encrypt masterKeyRaw with passwordKey
