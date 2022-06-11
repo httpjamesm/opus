@@ -42,3 +42,11 @@
     flex-wrap: wrap;
     gap: .5rem;
 }
+
+.backButton {
+    color: rgb(104, 104, 104);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}

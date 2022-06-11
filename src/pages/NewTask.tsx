@@ -12,11 +12,13 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 
 import Tag from "../components/Tag";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CreateTag from "src/components/CreateTag";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 const NewTask = () => {
     const navigate = useNavigate();
@@ -199,6 +201,12 @@ const NewTask = () => {
     return (
         <>
             <div className={styles.parent}>
+                <Link to="/home">
+                    <p role="button" className={styles.backButton}>
+                        <AiOutlineArrowLeft />
+                        Go Back
+                    </p>
+                </Link>
                 <h1>New Task</h1>
                 <hr />
                 <h2>Name</h2>
