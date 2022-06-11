@@ -165,7 +165,7 @@ const TaskComponent = ({
                         >
                             {decryptedName}
                         </p>
-                        {decryptedDueEpoch > 0 && (
+                        {decryptedDueEpoch > 0 && !task.completed && (
                             <DueComponent time={decryptedDueEpoch} />
                         )}
                     </div>
