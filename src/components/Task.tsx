@@ -12,6 +12,7 @@ const DueComponent = ({ time }: { time: number }) => {
     const months = diff.getUTCMonth(); // Gives month count of difference
     const days = diff.getUTCDate() - 1; // Gives day count of difference
     const hours = diff.getUTCHours(); // Gives hour count of difference
+    const minutes = diff.getUTCMinutes(); // Gives minute count of difference
 
     return (
         <>
@@ -22,10 +23,32 @@ const DueComponent = ({ time }: { time: number }) => {
                     marginLeft: ".5rem",
                 }}
             >
-                Due in {years > 0 && `${years} year${years > 1 ? "s" : ""},`}
-                {months > 0 && ` ${months} month${months > 1 ? "s" : ""},`}
-                {days > 0 && ` ${days} days`}
-                {hours > 0 && `${hours} hour${hours > 1 ? "s" : ""}`}
+                {/* show due date but don't show 0 values */}
+                {years > 0 && (
+                    <>
+                        {years} {years === 1 ? "year" : "years"}
+                    </>
+                )}{" "}
+                {months > 0 && (
+                    <>
+                        {months} {months === 1 ? "month" : "months"}
+                    </>
+                )}{" "}
+                {days > 0 && (
+                    <>
+                        {days} {days === 1 ? "day" : "days"}
+                    </>
+                )}{" "}
+                {hours > 0 && (
+                    <>
+                        {hours} {hours === 1 ? "hour" : "hours"}
+                    </>
+                )}{" "}
+                {minutes > 0 && (
+                    <>
+                        {minutes} {minutes === 1 ? "minute" : "minutes"}
+                    </>
+                )}{" "}
             </b>
         </>
     );
