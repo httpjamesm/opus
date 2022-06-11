@@ -3,7 +3,7 @@ import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { createSalt } from "src/utils/aes";
+import { createSalt, deriveKeypair, encrypt } from "src/utils/aes";
 
 // @ts-ignore
 import PBKDF2 from "crypto-js/pbkdf2";
@@ -32,7 +32,26 @@ const Register = () => {
             iterations: 1000,
         }).toString();
 
+        // create random AES-256-GCM key
+        const masterKey = await crypto.subtle.generateKey(
+            {
+                name: "AES-GCM",
+                length: 256,
+            },
+            true,
+            ["encrypt", "decrypt"]
+        );
+
+        // export as raw
+        const masterKeyRaw = await crypto.subtle.exportKey("raw", masterKey);
+
         const keySalt = await uint8ArrayToBase64(await createSalt(16));
+
+        // encrypt master key with user password
+        const passwordKey = await deriveKeypair(password, keySalt);
+
+        // encrypt masterKeyRaw with passwordKey
+        const encryptedMasterKey = await encrypt(masterKeyRaw, passwordKey);
 
         const request = await fetch(
             `${process.env.REACT_APP_API_URL}/auth/register`,
@@ -46,6 +65,8 @@ const Register = () => {
                     passwordHash: hash,
                     passwordSalt: salt,
                     keySalt,
+                    encryptedKey: encryptedMasterKey.data,
+                    encryptedKeyIV: encryptedMasterKey.iv,
                 }),
             }
         );

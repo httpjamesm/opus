@@ -3,7 +3,7 @@ import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { deriveKeypair } from "src/utils/aes";
+import { decrypt, deriveKeypair } from "src/utils/aes";
 
 // @ts-ignore
 import PBKDF2 from "crypto-js/pbkdf2";
@@ -22,7 +22,7 @@ const Login = () => {
     const doRegister = async () => {
         // get data
         const dataRequest = await fetch(
-            `${process.env.REACT_APP_API_URL}/auth/data?username=${username}`
+            `${process.env.REACT_APP_API_URL}/auth/logindata?username=${username}`
         );
 
         const dataResponse: {
@@ -56,8 +56,14 @@ const Login = () => {
             }
         );
 
-        const loginResponse: { success: boolean; data: string } =
-            await loginRequest.json();
+        const loginResponse: {
+            success: boolean;
+            data: {
+                token: string;
+                encryptedKey: string;
+                encryptedKeyIV: string;
+            };
+        } = await loginRequest.json();
 
         if (!loginResponse.success) {
             toast.error("Incorrect password");
@@ -65,7 +71,7 @@ const Login = () => {
         }
 
         // set session in localstorage
-        localStorage.setItem("session", loginResponse.data);
+        localStorage.setItem("session", loginResponse.data.token);
 
         // create key and store in db
         const derivedKey: CryptoKey = await deriveKeypair(
@@ -73,15 +79,36 @@ const Login = () => {
             dataResponse.data.keySalt
         );
 
+        // decrypt encrypted key
+        const decryptedMasterKey = await decrypt(
+            {
+                data: loginResponse.data.encryptedKey,
+                iv: loginResponse.data.encryptedKeyIV,
+            },
+            derivedKey
+        );
+
+        // import key
+        const masterCryptoKey = await crypto.subtle.importKey(
+            "raw",
+            decryptedMasterKey,
+            {
+                name: "AES-GCM",
+                length: 256,
+            },
+            true,
+            ["encrypt", "decrypt"]
+        );
+
         // clear indexeddb
         await db.table("keys").clear();
 
         // save
         await db.table("keys").add({
-            key: derivedKey,
+            key: masterCryptoKey,
         });
 
-        navigate('/home', { replace: true });
+        navigate("/home", { replace: true });
     };
 
     return (
