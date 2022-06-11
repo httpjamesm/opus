@@ -7,4 +7,6 @@ export interface Task {
     keyCiphertext: string;
     keyIV: string;
     completed: boolean;
+    dueDateCiphertext: string;
+    dueDateIV: string;
 }

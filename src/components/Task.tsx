@@ -3,6 +3,34 @@ import { decrypt } from "src/utils/aes";
 import type { Task } from "../interfaces/task";
 import Check from "./Check";
 
+const DueComponent = ({ time }: { time: number }) => {
+    const date = new Date(time * 1000);
+
+    const diff = new Date(date.getTime() - new Date().getTime());
+
+    const years = diff.getUTCFullYear() - 1970; // Gives difference as year
+    const months = diff.getUTCMonth(); // Gives month count of difference
+    const days = diff.getUTCDate() - 1; // Gives day count of difference
+    const hours = diff.getUTCHours(); // Gives hour count of difference
+
+    return (
+        <>
+            <b
+                style={{
+                    color: "#929292",
+                    margin: 0,
+                    marginLeft: ".5rem",
+                }}
+            >
+                Due in {years > 0 && `${years} year${years > 1 ? "s" : ""},`}
+                {months > 0 && ` ${months} month${months > 1 ? "s" : ""},`}
+                {days > 0 && ` ${days} days`}
+                {hours > 0 && `${hours} hour${hours > 1 ? "s" : ""}`}
+            </b>
+        </>
+    );
+};
+
 const TaskComponent = ({
     task,
     cryptoKey,
@@ -13,7 +41,8 @@ const TaskComponent = ({
     onClick: () => void;
 }) => {
     const [decryptedName, setDecryptedName] = useState<string>("");
-    const [decryptedDesc, setDecryptedDesc] = useState<string>("");
+
+    const [decryptedDueEpoch, setDecryptedDueEpoch] = useState<number>(0);
 
     const [isCompleted, setIsCompleted] = useState<boolean>(
         task.completed || false
@@ -42,15 +71,17 @@ const TaskComponent = ({
             key
         );
 
-        const decryptedDesc = await decrypt(
-            { data: task.descriptionCiphertext, iv: task.descriptionIV },
-            key
-        );
-
         const dec = new TextDecoder();
 
         setDecryptedName(dec.decode(decryptedName));
-        setDecryptedDesc(dec.decode(decryptedDesc));
+
+        if (task.dueDateCiphertext && task.dueDateIV) {
+            const decryptedEpoch = await decrypt(
+                { data: task.dueDateCiphertext, iv: task.dueDateIV },
+                key
+            );
+            setDecryptedDueEpoch(Number(dec.decode(decryptedEpoch)));
+        }
     };
 
     useEffect(() => {
@@ -88,19 +119,29 @@ const TaskComponent = ({
                 style={{
                     display: "flex",
                     alignItems: "center",
+                    marginBottom: "1rem",
                 }}
             >
-                <Check selected={isCompleted} onClick={markCompletion} />
-                <p
-                    onClick={onClick}
-                    style={{
-                        marginLeft: ".5rem",
-                        fontWeight: "bold",
-                        fontSize: "1.25rem",
-                    }}
-                >
-                    {decryptedName}
-                </p>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <Check selected={isCompleted} onClick={markCompletion} />
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <p
+                            onClick={onClick}
+                            style={{
+                                marginLeft: ".5rem",
+                                marginBottom: 0,
+                                marginTop: 0,
+                                fontWeight: "bold",
+                                fontSize: "1.25rem",
+                            }}
+                        >
+                            {decryptedName}
+                        </p>
+                        {decryptedDueEpoch > 0 && (
+                            <DueComponent time={decryptedDueEpoch} />
+                        )}
+                    </div>
+                </div>
             </div>
         </>
     );
