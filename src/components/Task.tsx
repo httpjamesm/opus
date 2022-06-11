@@ -6,7 +6,11 @@ import Check from "./Check";
 const DueComponent = ({ time }: { time: number }) => {
     const date = new Date(time * 1000);
 
-    const diff = new Date(date.getTime() - new Date().getTime());
+    const overdue = Date.now() > date.getTime();
+
+    let diff: Date = overdue
+        ? new Date(new Date().getTime() - date.getTime())
+        : new Date(date.getTime() - new Date().getTime());
 
     const years = diff.getUTCFullYear() - 1970; // Gives difference as year
     const months = diff.getUTCMonth(); // Gives month count of difference
@@ -18,11 +22,12 @@ const DueComponent = ({ time }: { time: number }) => {
         <>
             <b
                 style={{
-                    color: "#929292",
+                    color: overdue ? "#FF9191" : "#929292",
                     margin: 0,
                     marginLeft: ".5rem",
                 }}
             >
+                {overdue ? "Overdue by " : "Due in "}
                 {/* show due date but don't show 0 values */}
                 {years > 0 && (
                     <>
