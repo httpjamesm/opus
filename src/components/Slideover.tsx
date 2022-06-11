@@ -8,6 +8,10 @@ import type { Tag as TagInterface } from "src/interfaces/tag";
 
 import styles from "src/styles/Slideover.module.scss";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Check from "./Check";
+
 type returnvalue = [string, Dispatch<SetStateAction<string>>];
 
 function useSaveDebounce(delay = 350): returnvalue {
@@ -45,6 +49,13 @@ const Slideover = ({
     const [tags, setTags] = useState<TagInterface[]>([]);
     const [itemTags, setItemTags] = useState<number[]>([]);
 
+    const [dueDateEnabled, setDueDateEnabled] = useState<boolean>(
+        !!task.dueDateCiphertext
+    );
+    const [dueDate, setDueDate] = useState<Date>();
+    const [dueTime, setDueTime] = useState<string>("");
+    const [dueDateChanged, setDueDateChanged] = useState<boolean>(false);
+
     const decryptData = async (itemKey: CryptoKey) => {
         const decryptedName = await decrypt(
             { data: task.nameCiphertext, iv: task.nameIV },
@@ -65,6 +76,28 @@ const Slideover = ({
         setTaskDesc(decodedDecryptedDesc);
         setCachedTaskName(decodedDecryptedName);
         setCachedTaskDesc(decodedDecryptedDesc);
+
+        if (task.dueDateCiphertext && task.dueDateIV) {
+            // decrypt this
+            const decryptedEpoch = await decrypt(
+                { data: task.dueDateCiphertext, iv: task.dueDateIV },
+                itemKey
+            );
+
+            const dec = new TextDecoder();
+
+            const decodedDecryptedEpoch = Number(dec.decode(decryptedEpoch));
+
+            // get date
+            const date = new Date(decodedDecryptedEpoch * 1000);
+
+            setDueDate(date);
+
+            const timeString = date.toTimeString();
+
+            // only get the first part HH:MM
+            setDueTime(timeString.split(" ")[0]);
+        }
     };
 
     const decryptKey = async () => {
@@ -100,7 +133,7 @@ const Slideover = ({
 
     useEffect(() => {
         saveTask();
-    }, [taskName, taskDesc]);
+    }, [taskName, taskDesc, dueDate, dueTime]);
 
     const saveTask = async () => {
         const enc = new TextEncoder();
@@ -115,6 +148,22 @@ const Slideover = ({
             const encryptedDesc = await encrypt(enc.encode(taskDesc), _itemKey);
             task.descriptionCiphertext = encryptedDesc.data;
             task.descriptionIV = encryptedDesc.iv;
+        }
+
+        if (dueDateChanged) {
+            const dueDateEpoch: string = (
+                new Date(
+                    `${(dueDate as Date).toLocaleDateString()} ${dueTime}`
+                ).getTime() / 1000
+            ).toString();
+
+            const dueDateEncryptedObject = await encrypt(
+                enc.encode(dueDateEpoch),
+                _itemKey
+            );
+
+            task.dueDateCiphertext = dueDateEncryptedObject.data;
+            task.dueDateIV = dueDateEncryptedObject.iv;
         }
 
         const request = await fetch(
@@ -135,6 +184,10 @@ const Slideover = ({
                     description: {
                         ciphertext: task.descriptionCiphertext,
                         iv: task.descriptionIV,
+                    },
+                    due: {
+                        ciphertext: task.dueDateCiphertext,
+                        iv: task.dueDateIV,
                     },
                 }),
             }
@@ -243,6 +296,36 @@ const Slideover = ({
                     setCachedTaskDesc(e.target.value);
                 }}
             />
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <Check
+                    selected={dueDateEnabled}
+                    onClick={() => setDueDateEnabled(!dueDateEnabled)}
+                />
+                <p style={{ marginLeft: ".5rem" }}>Due Date</p>
+            </div>
+            {dueDateEnabled && (
+                <>
+                    <h3 style={{ marginTop: "1rem" }}>Date</h3>
+                    <DatePicker
+                        selected={dueDate}
+                        onChange={(date: Date) => {
+                            setDueDate(date);
+                            setDueDateChanged(true);
+                        }}
+                    />
+                    <h4>Time</h4>
+                    <input
+                        type="time"
+                        onChange={(e) => {
+                            console.log(e.target.value);
+                            setDueTime(e.target.value);
+                            setDueDateChanged(true);
+                        }}
+                        value={dueTime}
+                    />
+                </>
+            )}
+
             <h3 style={{ marginTop: "1rem" }}>Tags</h3>
             <div className={styles.tags}>
                 <CreateTag
