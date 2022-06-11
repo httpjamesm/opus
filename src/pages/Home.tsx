@@ -114,6 +114,7 @@ const Home = () => {
                     />
                     {tags.map((tagObject) => (
                         <Tag
+                            key={tagObject.id}
                             cryptoKey={key as CryptoKey}
                             selected={selectedTag === tagObject.id}
                             tag={tagObject}
@@ -150,6 +151,7 @@ const Home = () => {
                 title="Task Settings"
                 onRequestClose={() => {
                     // triggered on "<" on left top click or on outside click
+                    getTasks(selectedTag);
                     setOpenSlideover(false);
                 }}
             >

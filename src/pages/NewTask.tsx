@@ -65,9 +65,9 @@ const NewTask = () => {
         // encrypt exportedKey
         const encryptedKey = await encrypt(exportedKey, key.key);
 
-        const encryptedName = await encrypt(enc.encode(name), key.key);
+        const encryptedName = await encrypt(enc.encode(name), itemKey);
 
-        const encryptedDesc = await encrypt(enc.encode(desc), key.key);
+        const encryptedDesc = await encrypt(enc.encode(desc), itemKey);
 
         // send req
         const request = await fetch(

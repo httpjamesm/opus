@@ -34,15 +34,17 @@ const Slideover = ({
     const [cachedTaskName, setCachedTaskName] = useState<string>("");
     const [cachedTaskDesc, setCachedTaskDesc] = useState<string>("");
 
+    const [itemKey, setItemKey] = useState<CryptoKey>({} as CryptoKey);
+
     const decryptData = async () => {
         const decryptedName = await decrypt(
             { data: task.nameCiphertext, iv: task.nameIV },
-            cryptoKey
+            itemKey
         );
 
         const decryptedDesc = await decrypt(
             { data: task.descriptionCiphertext, iv: task.descriptionIV },
-            cryptoKey
+            itemKey
         );
 
         const dec = new TextDecoder();
@@ -53,8 +55,32 @@ const Slideover = ({
         setCachedTaskDesc(dec.decode(decryptedDesc));
     };
 
+    const decryptKey = async () => {
+        // decrypt the item's key
+        const decryptedKey = await decrypt(
+            { data: task.keyCiphertext, iv: task.keyIV },
+            cryptoKey
+        );
+
+        // import the key
+        const key = await crypto.subtle.importKey(
+            "raw",
+            decryptedKey,
+            "AES-GCM",
+            false,
+            ["decrypt"]
+        );
+
+        setItemKey(key);
+    };
+
+    const init = async () => {
+        await decryptKey();
+        await decryptData();
+    };
+
     useEffect(() => {
-        decryptData();
+        init();
     }, []);
 
     useEffect(() => {
@@ -65,19 +91,13 @@ const Slideover = ({
         const enc = new TextEncoder();
 
         if (nameChanged) {
-            const encryptedName = await encrypt(
-                enc.encode(taskName),
-                cryptoKey
-            );
+            const encryptedName = await encrypt(enc.encode(taskName), itemKey);
             task.nameCiphertext = encryptedName.data;
             task.nameIV = encryptedName.iv;
         }
 
         if (descChanged) {
-            const encryptedDesc = await encrypt(
-                enc.encode(taskDesc),
-                cryptoKey
-            );
+            const encryptedDesc = await encrypt(enc.encode(taskDesc), itemKey);
             task.descriptionCiphertext = encryptedDesc.data;
             task.descriptionIV = encryptedDesc.iv;
         }

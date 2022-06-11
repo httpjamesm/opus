@@ -21,14 +21,30 @@ const TaskComponent = ({
 
     const init = async () => {
         // decrypt name and desc
+
+        // decrypt the item's key
+        const decryptedKey = await decrypt(
+            { data: task.keyCiphertext, iv: task.keyIV },
+            cryptoKey
+        );
+
+        // import the key
+        const key = await crypto.subtle.importKey(
+            "raw",
+            decryptedKey,
+            "AES-GCM",
+            false,
+            ["decrypt"]
+        );
+
         const decryptedName = await decrypt(
             { data: task.nameCiphertext, iv: task.nameIV },
-            cryptoKey
+            key
         );
 
         const decryptedDesc = await decrypt(
             { data: task.descriptionCiphertext, iv: task.descriptionIV },
-            cryptoKey
+            key
         );
 
         const dec = new TextDecoder();
