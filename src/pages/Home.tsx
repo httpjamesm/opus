@@ -12,8 +12,9 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import Slideover from "src/components/Slideover";
+import TaskSlideover from "src/components/TaskSlideover";
 import { Link } from "react-router-dom";
+import TagSlideover from "src/components/TagSlideover";
 
 const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -28,9 +29,12 @@ const Home = () => {
 
     const [selectedTag, setSelectedTag] = useState<number>(0);
 
-    const [openSlideover, setOpenSlideover] = useState<boolean>(false);
+    const [openTaskSlideover, setOpenTaskSlideover] = useState<boolean>(false);
+    const [openTagSlideover, setOpenTagSlideover] = useState<boolean>(false);
 
     const [selectedTask, setSelectedTask] = useState<Task>();
+
+    const [editingTag, setEditingTag] = useState<TagInterface>();
 
     const getKey = async () => {
         // retrieve key from db
@@ -160,6 +164,10 @@ const Home = () => {
                                 }
                                 getTasks(tagObject.id);
                             }}
+                            onCogClick={() => {
+                                setEditingTag(tagObject);
+                                setOpenTagSlideover(true);
+                            }}
                         />
                     ))}
                 </div>
@@ -170,7 +178,7 @@ const Home = () => {
                     <TaskComponent
                         onClick={() => {
                             setSelectedTask(task);
-                            setOpenSlideover(true);
+                            setOpenTaskSlideover(true);
                         }}
                         key={task.id}
                         cryptoKey={key as CryptoKey}
@@ -182,7 +190,7 @@ const Home = () => {
                     <TaskComponent
                         onClick={() => {
                             setSelectedTask(task);
-                            setOpenSlideover(true);
+                            setOpenTaskSlideover(true);
                         }}
                         key={task.id}
                         cryptoKey={key as CryptoKey}
@@ -194,7 +202,7 @@ const Home = () => {
                     <TaskComponent
                         onClick={() => {
                             setSelectedTask(task);
-                            setOpenSlideover(true);
+                            setOpenTaskSlideover(true);
                         }}
                         key={task.id}
                         cryptoKey={key as CryptoKey}
@@ -203,17 +211,35 @@ const Home = () => {
                 ))}
             </div>
             <SlidingPane
-                isOpen={openSlideover}
-                title="Task Settings"
+                isOpen={openTaskSlideover}
+                title="Task Details"
                 onRequestClose={() => {
                     // triggered on "<" on left top click or on outside click
                     getTasks(selectedTag);
-                    setOpenSlideover(false);
+                    setOpenTaskSlideover(false);
                 }}
             >
-                <Slideover
+                <TaskSlideover
                     cryptoKey={key as CryptoKey}
                     task={selectedTask as Task}
+                />
+            </SlidingPane>
+            <SlidingPane
+                isOpen={openTagSlideover}
+                title="Tag Details"
+                onRequestClose={() => {
+                    // triggered on "<" on left top click or on outside click
+                    getTags();
+                    setOpenTagSlideover(false);
+                }}
+            >
+                <TagSlideover
+                    cryptoKey={key as CryptoKey}
+                    tag={editingTag as TagInterface}
+                    closeSlideover={() => {
+                        getTags();
+                        setOpenTagSlideover(false);
+                    }}
                 />
             </SlidingPane>
         </>

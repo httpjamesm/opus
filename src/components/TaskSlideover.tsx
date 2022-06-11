@@ -12,21 +12,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Check from "./Check";
 
-type returnvalue = [string, Dispatch<SetStateAction<string>>];
-
-function useSaveDebounce(delay = 350): returnvalue {
-    const [search, setSearch] = useState<string>("");
-    const [searchQuery, setSearchQuery] = useState<string>("");
-
-    useEffect(() => {
-        const delayFn = setTimeout(() => {
-            setSearch(searchQuery);
-        }, delay);
-        return () => clearTimeout(delayFn);
-    }, [searchQuery, delay]);
-
-    return [search, setSearchQuery];
-}
+import useSaveDebounce from "./SaveDebounce";
 
 const Slideover = ({
     task,

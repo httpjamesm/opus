@@ -3,16 +3,20 @@ import { Tag } from "src/interfaces/tag";
 import { decrypt } from "src/utils/aes";
 import styles from "../styles/Tag.module.scss";
 
+import { FaCog } from "react-icons/fa";
+
 const TagComponent = ({
     tag,
     selected,
     cryptoKey,
     onClick,
+    onCogClick,
 }: {
     tag: Tag;
     selected: boolean;
     cryptoKey: CryptoKey;
-    onClick?: () => void | Promise<void>;
+    onClick: () => void | Promise<void>;
+    onCogClick?: () => void | Promise<void>;
 }) => {
     const [decryptedName, setDecryptedName] = useState<string>("");
 
@@ -39,10 +43,24 @@ const TagComponent = ({
                     border: `2px solid ${tag.color}`,
                     backgroundColor: selected ? tag.color : "",
                 }}
-                onClick={onClick}
+                onClick={() => {
+                    onClick();
+                }}
             >
                 {decryptedName}{" "}
                 <span className={styles.count}>({tag.count})</span>
+                {selected && onCogClick && (
+                    <a
+                        role="button"
+                        className={styles.cog}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onCogClick();
+                        }}
+                    >
+                        <FaCog />
+                    </a>
+                )}
             </div>
         </>
     );

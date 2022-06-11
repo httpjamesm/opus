@@ -7,6 +7,12 @@
     width: fit-content;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+
+    user-select: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .count {
@@ -20,4 +26,17 @@
     height: fit-content !important;
     margin: 0;
     font-size: 1rem;
+}
+
+.cog {
+    display: flex;
+    align-items: center;
+    padding: .25rem;
+    margin-left: .5rem;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #cccccc;
+        border-radius: 10px;
+    }
 }
