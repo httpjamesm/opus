@@ -19,6 +19,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import checkAuthStatus from "src/utils/checkAuthStatus";
 
 const NewTask = () => {
     const navigate = useNavigate();
@@ -194,6 +195,7 @@ const NewTask = () => {
     }, []);
 
     const init = async () => {
+        if (!(await checkAuthStatus())) return navigate("/", { replace: true });
         await getKey();
         await getTags();
     };

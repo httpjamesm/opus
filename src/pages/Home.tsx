@@ -16,7 +16,13 @@ import TaskSlideover from "src/components/TaskSlideover";
 import { Link } from "react-router-dom";
 import TagSlideover from "src/components/TagSlideover";
 
+import checkAuthStatus from "src/utils/checkAuthStatus";
+
+import { useNavigate } from "react-router-dom";
+
 const Home = () => {
+    const navigate = useNavigate();
+
     const [tasks, setTasks] = useState<Task[]>([]);
 
     const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
@@ -124,6 +130,7 @@ const Home = () => {
     }, []);
 
     const init = async () => {
+        if (!(await checkAuthStatus())) return navigate("/", { replace: true });
         await getKey();
         await getTags();
         await getTasks();
