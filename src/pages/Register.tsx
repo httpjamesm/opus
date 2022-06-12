@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -10,6 +10,8 @@ import PBKDF2 from "crypto-js/pbkdf2";
 import { uint8ArrayToBase64 } from "src/utils/b64";
 import { useNavigate } from "react-router-dom";
 
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+
 const Register = () => {
     const navigate = useNavigate();
 
@@ -19,11 +21,17 @@ const Register = () => {
 
     const [confirmPassword, setConfirmPassword] = useState<string>("");
 
+    const [hcToken, setHcToken] = useState<string>("");
+
+    const captchaRef = useRef<HCaptcha>(null);
+
     const doRegister = async () => {
         if (password !== confirmPassword) {
             toast.error("Passwords do not match");
             return;
         }
+
+        captchaRef.current!.execute();
 
         const salt = await uint8ArrayToBase64(await createSalt(16));
 
@@ -66,6 +74,7 @@ const Register = () => {
                     keySalt,
                     encryptedKey: encryptedMasterKey.data,
                     encryptedKeyIV: encryptedMasterKey.iv,
+                    hCaptchaResponse: hcToken,
                 }),
             }
         );
@@ -103,9 +112,33 @@ const Register = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />
 
+                <HCaptcha
+                    size="invisible"
+                    sitekey={process.env.REACT_APP_HCAPTCHA_SITEKEY as string}
+                    onVerify={setHcToken}
+                    onExpire={() => {
+                        toast.error("Captcha expired, please try again.");
+                    }}
+                    onError={(err) => {
+                        toast.error(`Captcha error: ${err}`);
+                    }}
+                    ref={captchaRef}
+                />
+
                 <button className={styles.objectiveButton} onClick={doRegister}>
                     Register
                 </button>
+                <p style={{ fontSize: ".7rem", marginTop: ".5rem" }}>
+                    This site is protected by hCaptcha and its{" "}
+                    <a href="https://www.hcaptcha.com/privacy" target="_blank">
+                        Privacy Policy
+                    </a>{" "}
+                    and{" "}
+                    <a href="https://www.hcaptcha.com/terms" target="_blank">
+                        Terms of Service
+                    </a>{" "}
+                    apply.
+                </p>
             </div>
             <ToastContainer />
         </>
