@@ -70,19 +70,21 @@ const Home = () => {
         } = await request.json();
 
         if (response.success) {
-            setTasks([]);
-            setCompletedTasks([]);
-            setUpcomingTasks([]);
+            let upcomingTasksLocal: Task[] = [];
+            let tasksLocal: Task[] = [];
 
             await Promise.all(
                 response.data.map(async (task) => {
                     if (task.dueDateCiphertext) {
-                        setUpcomingTasks([...upcomingTasks, task]);
+                        upcomingTasksLocal = [...upcomingTasksLocal, task];
                         return;
                     }
-                    setTasks([...tasks, task]);
+                    tasksLocal = [...tasksLocal, task];
                 })
             );
+
+            setUpcomingTasks(upcomingTasksLocal);
+            setTasks(tasksLocal);
 
             const completedRequest = await fetch(uri + "&show_completed=1", {
                 headers: {
