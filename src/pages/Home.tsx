@@ -231,6 +231,10 @@ const Home = () => {
                 <TaskSlideover
                     cryptoKey={key as CryptoKey}
                     task={selectedTask as Task}
+                    closeSlideover={() => {
+                        getTasks(selectedTag);
+                        setOpenTaskSlideover(false);
+                    }}
                 />
             </SlidingPane>
             <SlidingPane

@@ -14,12 +14,16 @@ import Check from "./Check";
 
 import useSaveDebounce from "./SaveDebounce";
 
+import { FiDelete } from "react-icons/fi";
+
 const Slideover = ({
     task,
     cryptoKey,
+    closeSlideover,
 }: {
     task: Task;
     cryptoKey: CryptoKey;
+    closeSlideover: () => void;
 }) => {
     const [nameChanged, setNameChanged] = useState<boolean>(false);
     const [descChanged, setDescChanged] = useState<boolean>(false);
@@ -259,6 +263,24 @@ const Slideover = ({
         );
     };
 
+    const deleteTask = async () => {
+        const request = await fetch(
+            `${process.env.REACT_APP_API_URL}/task/delete?task=${task.id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    authorization: window.localStorage.getItem(
+                        "session"
+                    ) as string,
+                },
+            }
+        );
+
+        if (request.status === 200) {
+            closeSlideover();
+        }
+    };
+
     return (
         <>
             <h3>Name</h3>
@@ -342,6 +364,22 @@ const Slideover = ({
                     />
                 ))}
             </div>
+            <p
+                role="button"
+                className={styles.deleteButton}
+                onClick={deleteTask}
+            >
+                <span
+                    style={{
+                        marginRight: ".5rem",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <FiDelete />
+                </span>
+                Delete Task
+            </p>
         </>
     );
 };
