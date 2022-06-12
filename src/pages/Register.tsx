@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -25,14 +25,16 @@ const Register = () => {
 
     const captchaRef = useRef<HCaptcha>(null);
 
-    const doRegister = async () => {
+    const handleRegisterClick = async () => {
         if (password !== confirmPassword) {
             toast.error("Passwords do not match");
             return;
         }
 
         captchaRef.current!.execute();
+    };
 
+    const doRegister = async (hcToken: string) => {
         const salt = await uint8ArrayToBase64(await createSalt(16));
 
         const hash = PBKDF2(password, salt, {
@@ -90,6 +92,10 @@ const Register = () => {
         }
     };
 
+    useEffect(() => {
+        doRegister(hcToken);
+    }, [hcToken]);
+
     return (
         <>
             <div className={styles.parent}>
@@ -115,7 +121,7 @@ const Register = () => {
                 <HCaptcha
                     size="invisible"
                     sitekey={process.env.REACT_APP_HCAPTCHA_SITEKEY as string}
-                    onVerify={setHcToken}
+                    onVerify={(token) => setHcToken(token)}
                     onExpire={() => {
                         toast.error("Captcha expired, please try again.");
                     }}
@@ -125,7 +131,10 @@ const Register = () => {
                     ref={captchaRef}
                 />
 
-                <button className={styles.objectiveButton} onClick={doRegister}>
+                <button
+                    className={styles.objectiveButton}
+                    onClick={handleRegisterClick}
+                >
                     Register
                 </button>
                 <p style={{ fontSize: ".7rem", marginTop: ".5rem" }}>
