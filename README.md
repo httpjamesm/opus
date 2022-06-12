@@ -1,47 +1,39 @@
-# Getting Started with Create React App
+# Opus - Get stuff done securely.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Opus is a functional, minimal and secure end-to-end encrypted task manager. Store grocery lists, to-do lists, shopping wishlists and more with the peace of mind that your data is truly yours.
 
-## Available Scripts
+## Security Architecture
 
-In the project directory, you can run:
+### Key Encryption
 
-### `yarn start`
+#### Fundamentals
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+**Master Key**
+Upon registration, Opus creates a random AES-256-GCM keypair, called your "master key". This master key is used to directly encrypt tag names and item keys for tasks. This key never leaves your device unencrypted.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+**Master Key Encryption Key**
+Before sending off your master key to Opus' server, it is client-side encrypted with an AES-256-GCM keypair derived from your password.
 
-### `yarn test`
+### Authentication
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Opus uses a username and password to authenticate you.
 
-### `yarn build`
+#### Password
+Since Opus uses end-to-end encryption, the user's password cannot leave their device without being hashed. Salted PBKDF2 is used to hash the password on the client before being shipped off to Opus. On subsequent logins, the server provides the password salt and the client uses the salt to hash the password. This hashed password is then sent to the server for authentication.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Sessions
+Opus uses JWT to wrap a unique session identifier. This identifier doesn't contain any personal information, but it is attached to your account on the server.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### AES Encryption
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+All AES encryption is performed in GCM mode to provide authentication in parallel with encryption. Since GCM is very sensitive to initialization vector (IV) reuse, Opus generates a cryptographic random IV for each encryption and re-encryption operation.
 
-### `yarn eject`
+### Tag Encryption
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Tags are encrypted with the master key directly for performance reasons.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Task Encryption
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Task Encryption Key
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-# opus2
+Tasks are encrypted with a unique randomly generated AES-256-GCM keypair. Every task is encrypted using their own keypair. This key is encrypted with the master key and shipped off to the server along with the encrypted name, description and due date.
