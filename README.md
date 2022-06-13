@@ -1,4 +1,4 @@
-# Opus - Get stuff done securely.
+# Opus - Get stuff done securely. [![CodeFactor](https://www.codefactor.io/repository/github/httpjamesm/opus/badge)](https://www.codefactor.io/repository/github/httpjamesm/opus)
 
 Opus is a functional, minimal and secure end-to-end encrypted task manager. Store grocery lists, to-do lists, shopping wishlists and more with the peace of mind that your data is truly yours.
 
