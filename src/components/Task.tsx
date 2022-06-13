@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { decrypt } from "src/utils/aes";
+import { decrypt, encrypt } from "src/utils/aes";
 import { recurringValues } from "src/utils/recurringValues";
 import type { Task } from "../interfaces/task";
 import Check from "./Check";
@@ -80,6 +80,8 @@ const TaskComponent = ({
         task.completed || false
     );
 
+    const [_itemKey, setItemKey] = useState<CryptoKey>({} as CryptoKey);
+
     const init = async () => {
         // decrypt name and desc
 
@@ -95,8 +97,10 @@ const TaskComponent = ({
             decryptedKey,
             "AES-GCM",
             false,
-            ["decrypt"]
+            ["encrypt", "decrypt"]
         );
+
+        setItemKey(key);
 
         const decryptedName = await decrypt(
             { data: task.nameCiphertext, iv: task.nameIV },
@@ -135,8 +139,41 @@ const TaskComponent = ({
     const markCompletion = async () => {
         setIsCompleted(!isCompleted);
 
-        if (task.recurringCiphertext && task.recurringIV) {
+        if (!isCompleted && task.recurringCiphertext && task.recurringIV) {
             // don't actually mark since it's recurring and can be completed multiple times, but update the due date to the next recurring date
+            const dueDateEpochSeconds = decryptedDueEpoch;
+            const newDueDate = dueDateEpochSeconds + decryptedRecurringSeconds;
+
+            const enc = new TextEncoder();
+
+            const encryptedNewDueDate = await encrypt(
+                enc.encode(newDueDate.toString()),
+                _itemKey
+            );
+
+            const request = await fetch(
+                `${process.env.REACT_APP_API_URL}/task/recur?task=${task.id}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        authorization: window.localStorage.getItem(
+                            "session"
+                        ) as string,
+                    },
+                    body: JSON.stringify({
+                        newDueDate: {
+                            ciphertext: encryptedNewDueDate.data,
+                            iv: encryptedNewDueDate.iv,
+                        },
+                    }),
+                }
+            );
+
+            if (request.status === 200) {
+                setDecryptedDueEpoch(newDueDate);
+            }
+
             return;
         }
 
@@ -193,7 +230,7 @@ const TaskComponent = ({
                                     {decryptedRecurringSeconds > 0 && (
                                         <p
                                             style={{
-                                                marginLeft: ".5rem",
+                                                marginLeft: ".25rem",
                                                 marginBottom: 0,
                                                 marginTop: 0,
                                                 fontWeight: "bold",
