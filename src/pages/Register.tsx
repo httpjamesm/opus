@@ -93,6 +93,7 @@ const Register = () => {
     };
 
     useEffect(() => {
+        if (!hcToken) return;
         doRegister(hcToken);
     }, [hcToken]);
 
