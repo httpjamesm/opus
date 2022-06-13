@@ -20,6 +20,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import checkAuthStatus from "src/utils/checkAuthStatus";
+import { recurringValues } from "src/utils/recurringValues";
 
 const NewTask = () => {
     const navigate = useNavigate();
@@ -37,6 +38,9 @@ const NewTask = () => {
     const [dueDateEnabled, setDueDateEnabled] = useState<boolean>(false);
     const [dueDate, setDueDate] = useState<Date>(new Date());
     const [dueTime, setDueTime] = useState<string>("");
+
+    const [recurringEnabled, setRecurringEnabled] = useState<boolean>(false);
+    const [recurringSeconds, setRecurringSeconds] = useState<number>(0);
 
     const getKey = async () => {
         // retrieve key from db
@@ -83,6 +87,9 @@ const NewTask = () => {
         let dueDateEncrypted: string = "";
         let dueDateIV: string = "";
 
+        let recurringEncrypted: string = "";
+        let recurringIV: string = "";
+
         if (dueDateEnabled) {
             const dueDateEpoch: string = (
                 new Date(
@@ -97,6 +104,16 @@ const NewTask = () => {
 
             dueDateEncrypted = dueDateEncryptedObject.data;
             dueDateIV = dueDateEncryptedObject.iv;
+        }
+
+        if (recurringEnabled && recurringSeconds > 0) {
+            const recurringEncryptedObject = await encrypt(
+                enc.encode(recurringSeconds.toString()),
+                itemKey
+            );
+
+            recurringEncrypted = recurringEncryptedObject.data;
+            recurringIV = recurringEncryptedObject.iv;
         }
 
         // send req
@@ -126,6 +143,10 @@ const NewTask = () => {
                     due: {
                         ciphertext: dueDateEncrypted,
                         iv: dueDateIV,
+                    },
+                    recurring: {
+                        ciphertext: recurringEncrypted,
+                        iv: recurringIV,
                     },
                 }),
             }
@@ -226,10 +247,6 @@ const NewTask = () => {
 Maybe evergreen?`}
                 />
                 <div className={styles.settingGroup}>
-                    <Check selected={false} />
-                    <p className={styles.desc}>Recurring</p>
-                </div>
-                <div className={styles.settingGroup}>
                     <Check
                         selected={dueDateEnabled}
                         onClick={() => {
@@ -250,8 +267,42 @@ Maybe evergreen?`}
                             type="time"
                             onChange={(e) => setDueTime(e.target.value)}
                         />
+                        <div className={styles.settingGroup}>
+                            <Check
+                                selected={recurringEnabled}
+                                onClick={() => {
+                                    setRecurringEnabled(!recurringEnabled);
+                                    if (recurringEnabled) {
+                                        // clear recurring
+                                        setRecurringSeconds(0);
+                                    } else {
+                                        // set to 3600
+                                        setRecurringSeconds(3600);
+                                    }
+                                }}
+                            />
+                            <p className={styles.desc}>Recurring</p>
+                        </div>
+                        {recurringEnabled && (
+                            <select
+                                style={{ marginTop: "1rem" }}
+                                value={recurringSeconds}
+                                onChange={(e) => {
+                                    setRecurringSeconds(Number(e.target.value));
+                                }}
+                            >
+                                {Object.keys(recurringValues).map(
+                                    (key: string) => (
+                                        <option key={key} value={Number(key)}>
+                                            {recurringValues[key]}
+                                        </option>
+                                    )
+                                )}
+                            </select>
+                        )}
                     </>
                 )}
+
                 <h2>Tags</h2>
                 <div className={styles.tags}>
                     <CreateTag
