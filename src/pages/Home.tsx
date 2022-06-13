@@ -30,6 +30,8 @@ const Home = () => {
 
     const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
 
+    const [recurringTasks, setRecurringTasks] = useState<Task[]>([]);
+
     const [tags, setTags] = useState<TagInterface[]>([]);
 
     const [key, setKey] = useState<CryptoKey>();
@@ -75,9 +77,14 @@ const Home = () => {
         if (response.success) {
             let upcomingTasksLocal: Task[] = [];
             let tasksLocal: Task[] = [];
+            let recurringTasksLocal: Task[] = [];
 
             await Promise.all(
                 response.data.map(async (task) => {
+                    if (task.recurringCiphertext) {
+                        recurringTasksLocal = [...recurringTasksLocal, task];
+                        return;
+                    }
                     if (task.dueDateCiphertext) {
                         upcomingTasksLocal = [...upcomingTasksLocal, task];
                         return;
@@ -88,6 +95,7 @@ const Home = () => {
 
             setUpcomingTasks(upcomingTasksLocal);
             setTasks(tasksLocal);
+            setRecurringTasks(recurringTasksLocal);
 
             const completedRequest = await fetch(uri + "&show_completed=1", {
                 headers: {
@@ -227,7 +235,17 @@ const Home = () => {
                         </>
                     )}
                     <h2 className={styles.sectionTitle}>Recurring</h2>
-                    {/* <Check selected={false} /> */}
+                    {recurringTasks.map((task) => (
+                        <TaskComponent
+                            onClick={() => {
+                                setSelectedTask(task);
+                                setOpenTaskSlideover(true);
+                            }}
+                            key={task.id}
+                            cryptoKey={key as CryptoKey}
+                            task={task}
+                        />
+                    ))}
                     <h2 className={styles.sectionTitle}>Upcoming</h2>
                     {upcomingTasks.map((task) => (
                         <TaskComponent

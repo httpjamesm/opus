@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { decrypt } from "src/utils/aes";
+import { recurringValues } from "src/utils/recurringValues";
 import type { Task } from "../interfaces/task";
 import Check from "./Check";
 
@@ -72,6 +73,9 @@ const TaskComponent = ({
 
     const [decryptedDueEpoch, setDecryptedDueEpoch] = useState<number>(0);
 
+    const [decryptedRecurringSeconds, setDecryptedRecurringSeconds] =
+        useState<number>(0);
+
     const [isCompleted, setIsCompleted] = useState<boolean>(
         task.completed || false
     );
@@ -108,7 +112,19 @@ const TaskComponent = ({
                 { data: task.dueDateCiphertext, iv: task.dueDateIV },
                 key
             );
+
             setDecryptedDueEpoch(Number(dec.decode(decryptedEpoch)));
+        }
+
+        if (task.recurringCiphertext && task.recurringIV) {
+            const decryptedRecurringSeconds = await decrypt(
+                { data: task.recurringCiphertext, iv: task.recurringIV },
+                key
+            );
+
+            setDecryptedRecurringSeconds(
+                Number(dec.decode(decryptedRecurringSeconds))
+            );
         }
     };
 
@@ -166,7 +182,30 @@ const TaskComponent = ({
                             {decryptedName}
                         </p>
                         {decryptedDueEpoch > 0 && !task.completed && (
-                            <DueComponent time={decryptedDueEpoch} />
+                            <>
+                                <div style={{ display: "flex" }}>
+                                    <DueComponent time={decryptedDueEpoch} />
+                                    {decryptedRecurringSeconds > 0 && (
+                                        <p
+                                            style={{
+                                                marginLeft: ".5rem",
+                                                marginBottom: 0,
+                                                marginTop: 0,
+                                                fontWeight: "bold",
+                                                color: "#929292",
+                                            }}
+                                        >
+                                            (
+                                            {
+                                                recurringValues[
+                                                    decryptedRecurringSeconds
+                                                ]
+                                            }
+                                            )
+                                        </p>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

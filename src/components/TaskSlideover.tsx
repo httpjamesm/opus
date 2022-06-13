@@ -15,6 +15,7 @@ import Check from "./Check";
 import useSaveDebounce from "./SaveDebounce";
 
 import { FiDelete } from "react-icons/fi";
+import { recurringValues } from "src/utils/recurringValues";
 
 const Slideover = ({
     task,
@@ -45,6 +46,12 @@ const Slideover = ({
     const [dueDate, setDueDate] = useState<Date>();
     const [dueTime, setDueTime] = useState<string>("");
     const [dueDateChanged, setDueDateChanged] = useState<boolean>(false);
+
+    const [recurringEnabled, setRecurringEnabled] = useState<boolean>(
+        !!task.recurringCiphertext
+    );
+    const [recurringSeconds, setRecurringSeconds] = useState<number>(0);
+    const [recurringChanged, setRecurringChanged] = useState<boolean>(false);
 
     const decryptData = async (itemKey: CryptoKey) => {
         const decryptedName = await decrypt(
@@ -88,6 +95,23 @@ const Slideover = ({
             // only get the first part HH:MM
             setDueTime(timeString.split(" ")[0]);
         }
+
+        if (task.recurringCiphertext && task.recurringIV) {
+            // decrypt this
+            const decryptedRecurring = await decrypt(
+                { data: task.recurringCiphertext, iv: task.recurringIV },
+                itemKey
+            );
+
+            const dec = new TextDecoder();
+
+            const decodedDecryptedRecurring = Number(
+                dec.decode(decryptedRecurring)
+            );
+
+            setRecurringEnabled(true);
+            setRecurringSeconds(decodedDecryptedRecurring);
+        }
     };
 
     const decryptKey = async () => {
@@ -123,7 +147,14 @@ const Slideover = ({
 
     useEffect(() => {
         saveTask();
-    }, [taskName, taskDesc, dueDate, dueTime]);
+    }, [
+        taskName,
+        taskDesc,
+        dueDate,
+        dueTime,
+        recurringEnabled,
+        recurringSeconds,
+    ]);
 
     const saveTask = async () => {
         const enc = new TextEncoder();
@@ -156,6 +187,16 @@ const Slideover = ({
             task.dueDateIV = dueDateEncryptedObject.iv;
         }
 
+        if (recurringChanged) {
+            const recurringSecondsEncryptedObject = await encrypt(
+                enc.encode(recurringSeconds.toString()),
+                _itemKey
+            );
+
+            task.recurringCiphertext = recurringSecondsEncryptedObject.data;
+            task.recurringIV = recurringSecondsEncryptedObject.iv;
+        }
+
         const request = await fetch(
             `${process.env.REACT_APP_API_URL}/task/edit?task=${task.id}`,
             {
@@ -178,6 +219,10 @@ const Slideover = ({
                     due: {
                         ciphertext: task.dueDateCiphertext,
                         iv: task.dueDateIV,
+                    },
+                    recurring: {
+                        ciphertext: task.recurringCiphertext,
+                        iv: task.recurringIV,
                     },
                 }),
             }
@@ -306,10 +351,40 @@ const Slideover = ({
             />
             <div style={{ display: "flex", alignItems: "center" }}>
                 <Check
+                    selected={recurringEnabled}
+                    onClick={() => {
+                        setRecurringChanged(true);
+                        setRecurringEnabled(!recurringEnabled);
+                        setRecurringSeconds(3600);
+                    }}
+                />
+                <p style={{ marginLeft: ".5rem", fontWeight: "bold" }}>
+                    Recurring
+                </p>
+            </div>
+            {recurringEnabled && (
+                <select
+                    value={recurringSeconds}
+                    onChange={(e) => {
+                        setRecurringChanged(true);
+                        setRecurringSeconds(Number(e.target.value));
+                    }}
+                >
+                    {Object.keys(recurringValues).map((key: string) => (
+                        <option key={key} value={Number(key)}>
+                            {recurringValues[key]}
+                        </option>
+                    ))}
+                </select>
+            )}
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <Check
                     selected={dueDateEnabled}
                     onClick={() => setDueDateEnabled(!dueDateEnabled)}
                 />
-                <p style={{ marginLeft: ".5rem" }}>Due Date</p>
+                <p style={{ marginLeft: ".5rem", fontWeight: "bold" }}>
+                    Due Date
+                </p>
             </div>
             {dueDateEnabled && (
                 <>

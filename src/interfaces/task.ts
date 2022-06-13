@@ -9,4 +9,6 @@ export interface Task {
     completed: boolean;
     dueDateCiphertext: string;
     dueDateIV: string;
+    recurringCiphertext: string;
+    recurringIV: string;
 }

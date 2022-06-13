@@ -59,6 +59,16 @@ a {
     text-decoration: none;
 }
 
+select {
+    border: 0;
+    border-bottom: 2px solid black;
+    font-size: 1rem;
+}
+
+select:focus {
+    outline: none;
+}
+
 @font-face {
 	font-family: Inter;
 	font-weight: normal;
