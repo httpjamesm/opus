@@ -135,6 +135,11 @@ const TaskComponent = ({
     const markCompletion = async () => {
         setIsCompleted(!isCompleted);
 
+        if (task.recurringCiphertext && task.recurringIV) {
+            // don't actually mark since it's recurring and can be completed multiple times, but update the due date to the next recurring date
+            return;
+        }
+
         // send req
         const request = await fetch(
             `${process.env.REACT_APP_API_URL}/task/mark?id=${task.id}&mark=${

@@ -43,7 +43,7 @@ const Slideover = ({
     const [dueDateEnabled, setDueDateEnabled] = useState<boolean>(
         !!task.dueDateCiphertext
     );
-    const [dueDate, setDueDate] = useState<Date>();
+    const [dueDate, setDueDate] = useState<Date | null>();
     const [dueTime, setDueTime] = useState<string>("");
     const [dueDateChanged, setDueDateChanged] = useState<boolean>(false);
 
@@ -150,6 +150,7 @@ const Slideover = ({
     }, [
         taskName,
         taskDesc,
+        dueDateEnabled,
         dueDate,
         dueTime,
         recurringEnabled,
@@ -171,7 +172,7 @@ const Slideover = ({
             task.descriptionIV = encryptedDesc.iv;
         }
 
-        if (dueDateChanged) {
+        if (dueDateChanged && dueDate !== null) {
             const dueDateEpoch: string = (
                 new Date(
                     `${(dueDate as Date).toLocaleDateString()} ${dueTime}`
@@ -217,12 +218,12 @@ const Slideover = ({
                         iv: task.descriptionIV,
                     },
                     due: {
-                        ciphertext: task.dueDateCiphertext,
-                        iv: task.dueDateIV,
+                        ciphertext: dueDateEnabled ? task.dueDateCiphertext : "",
+                        iv: dueDateEnabled ? task.dueDateIV : "",
                     },
                     recurring: {
-                        ciphertext: task.recurringCiphertext,
-                        iv: task.recurringIV,
+                        ciphertext: recurringEnabled ? task.recurringCiphertext : "",
+                        iv: recurringEnabled ? task.recurringIV : "",
                     },
                 }),
             }
@@ -351,36 +352,17 @@ const Slideover = ({
             />
             <div style={{ display: "flex", alignItems: "center" }}>
                 <Check
-                    selected={recurringEnabled}
-                    onClick={() => {
-                        setRecurringChanged(true);
-                        setRecurringEnabled(!recurringEnabled);
-                        setRecurringSeconds(3600);
-                    }}
-                />
-                <p style={{ marginLeft: ".5rem", fontWeight: "bold" }}>
-                    Recurring
-                </p>
-            </div>
-            {recurringEnabled && (
-                <select
-                    value={recurringSeconds}
-                    onChange={(e) => {
-                        setRecurringChanged(true);
-                        setRecurringSeconds(Number(e.target.value));
-                    }}
-                >
-                    {Object.keys(recurringValues).map((key: string) => (
-                        <option key={key} value={Number(key)}>
-                            {recurringValues[key]}
-                        </option>
-                    ))}
-                </select>
-            )}
-            <div style={{ display: "flex", alignItems: "center" }}>
-                <Check
                     selected={dueDateEnabled}
-                    onClick={() => setDueDateEnabled(!dueDateEnabled)}
+                    onClick={() => {
+                        setDueDateEnabled(!dueDateEnabled);
+                        if (dueDateEnabled) {
+                            // disable due date
+                            setDueDate(null);
+                            setDueTime("");
+                            setRecurringEnabled(false);
+                        }
+                        setDueDateChanged(true);
+                    }}
                 />
                 <p style={{ marginLeft: ".5rem", fontWeight: "bold" }}>
                     Due Date
@@ -400,13 +382,48 @@ const Slideover = ({
                     <input
                         type="time"
                         onChange={(e) => {
-                            console.log(e.target.value);
                             setDueTime(e.target.value);
                             setDueDateChanged(true);
                         }}
                         value={dueTime}
                     />
                 </>
+            )}
+            {dueDateEnabled && (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <Check
+                        selected={recurringEnabled}
+                        onClick={() => {
+                            setRecurringChanged(true);
+                            setRecurringEnabled(!recurringEnabled);
+                            if (recurringEnabled) {
+                                // disable recurring
+                                setRecurringSeconds(0);
+                            } else {
+                                setRecurringSeconds(3600);
+                            }
+                        }}
+                    />
+                    <p style={{ marginLeft: ".5rem", fontWeight: "bold" }}>
+                        Recurring
+                    </p>
+                </div>
+            )}
+
+            {recurringEnabled && dueDateEnabled && (
+                <select
+                    value={recurringSeconds}
+                    onChange={(e) => {
+                        setRecurringChanged(true);
+                        setRecurringSeconds(Number(e.target.value));
+                    }}
+                >
+                    {Object.keys(recurringValues).map((key: string) => (
+                        <option key={key} value={Number(key)}>
+                            {recurringValues[key]}
+                        </option>
+                    ))}
+                </select>
             )}
 
             <h3 style={{ marginTop: "1rem" }}>Tags</h3>

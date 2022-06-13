@@ -81,11 +81,12 @@ const Home = () => {
 
             await Promise.all(
                 response.data.map(async (task) => {
-                    if (task.recurringCiphertext) {
-                        recurringTasksLocal = [...recurringTasksLocal, task];
-                        return;
-                    }
                     if (task.dueDateCiphertext) {
+                        if (task.recurringCiphertext) {
+                            recurringTasksLocal = [...recurringTasksLocal, task];
+                            return;
+                        }
+                        
                         upcomingTasksLocal = [...upcomingTasksLocal, task];
                         return;
                     }
