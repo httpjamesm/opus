@@ -36,6 +36,7 @@ const Landing = () => {
                             <span className={styles.loginText}>login</span>
                         </Link>
                     </p>
+                    <p>Made with ❤️ by <a href="https://httpjames.space" target="_blank">http.james</a> on <a href="https://github.com/httpjamesm/opus" target="_blank">GitHub</a>.</p>
                 </div>
             </div>
         </>
