@@ -19,6 +19,7 @@ import TagSlideover from "src/components/TagSlideover";
 import checkAuthStatus from "src/utils/checkAuthStatus";
 
 import { useNavigate } from "react-router-dom";
+import DesktopSidebar from "src/components/DesktopSidebar";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -40,7 +41,9 @@ const Home = () => {
 
     const [selectedTask, setSelectedTask] = useState<Task>();
 
-    const [editingTag, setEditingTag] = useState<TagInterface>();
+    const [editingTag, setEditingTag] = useState<TagInterface>(
+        {} as TagInterface
+    );
 
     const getKey = async () => {
         // retrieve key from db
@@ -129,132 +132,177 @@ const Home = () => {
 
     useEffect(() => {
         init();
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
 
     const init = async () => {
         if (!(await checkAuthStatus())) return navigate("/", { replace: true });
+        handleResize();
         await getKey();
         await getTags();
         await getTasks();
     };
 
+    const [isMobile, setIsMobile] = useState<boolean>(true);
+
+    const handleResize = () => {
+        setIsMobile(window.innerWidth < 800);
+    };
+
     return (
         <>
-            <div className={styles.parent}>
-                <h1>Home</h1>
-                <hr />
-                <div className={styles.tagsParent}>
-                    <h2 className={styles.sectionTitle}>Tags</h2>
-                    <Link to="/newtask">
-                        <button className={styles.newTaskButton}>
-                            New Task
-                        </button>
-                    </Link>
-                </div>
-                <div className={styles.tags}>
-                    <CreateTag
-                        cryptoKey={key as CryptoKey}
-                        uponCreation={() => {
-                            getTags();
-                        }}
-                    />
-                    {tags.map((tagObject) => (
-                        <Tag
-                            key={tagObject.id}
-                            cryptoKey={key as CryptoKey}
-                            selected={selectedTag === tagObject.id}
-                            tag={tagObject}
-                            onClick={() => {
-                                if (selectedTag === tagObject.id) {
-                                    // if tag is selected, then set to 0
-                                    setSelectedTag(0);
-                                    getTasks(0);
-                                    return;
-                                }
-                                getTasks(tagObject.id);
-                            }}
-                            onCogClick={() => {
-                                setEditingTag(tagObject);
-                                setOpenTagSlideover(true);
-                            }}
-                        />
-                    ))}
-                </div>
-                <h2 className={styles.sectionTitle}>Recurring</h2>
-                <Check selected={false} />
-                <h2 className={styles.sectionTitle}>Upcoming</h2>
-                {upcomingTasks.map((task) => (
-                    <TaskComponent
-                        onClick={() => {
-                            setSelectedTask(task);
-                            setOpenTaskSlideover(true);
-                        }}
-                        key={task.id}
-                        cryptoKey={key as CryptoKey}
-                        task={task}
-                    />
-                ))}
-                <h2 className={styles.sectionTitle}>General</h2>
-                {tasks.map((task) => (
-                    <TaskComponent
-                        onClick={() => {
-                            setSelectedTask(task);
-                            setOpenTaskSlideover(true);
-                        }}
-                        key={task.id}
-                        cryptoKey={key as CryptoKey}
-                        task={task}
-                    />
-                ))}
-                <h2 className={styles.sectionTitle}>Completed</h2>
-                {completedTasks.map((task) => (
-                    <TaskComponent
-                        onClick={() => {
-                            setSelectedTask(task);
-                            setOpenTaskSlideover(true);
-                        }}
-                        key={task.id}
-                        cryptoKey={key as CryptoKey}
-                        task={task}
-                    />
-                ))}
-            </div>
-            <SlidingPane
-                isOpen={openTaskSlideover}
-                title="Task Details"
-                onRequestClose={() => {
-                    // triggered on "<" on left top click or on outside click
-                    getTasks(selectedTag);
-                    setOpenTaskSlideover(false);
+            <div
+                style={{
+                    display: isMobile ? "auto" : "flex",
+                    height: isMobile ? "fit-content" : "100%",
+                    overflow: "hidden",
                 }}
             >
-                <TaskSlideover
-                    cryptoKey={key as CryptoKey}
-                    task={selectedTask as Task}
-                    closeSlideover={() => {
+                {!isMobile && key && (
+                    <DesktopSidebar
+                        tags={tags}
+                        cryptoKey={key as CryptoKey}
+                        onTagClick={(tagObject: TagInterface) => {
+                            if (selectedTag === tagObject.id) {
+                                // if tag is selected, then set to 0
+                                setSelectedTag(0);
+                                getTasks(0);
+                                return;
+                            }
+                            getTasks(tagObject.id);
+                        }}
+                        openTagSlideover={() => {
+                            setOpenTagSlideover(true);
+                        }}
+                        setSelectedTagOutside={setEditingTag}
+                    />
+                )}
+                <div className={styles.parent}>
+                    <button
+                        className={styles.newTaskButton}
+                        onClick={() => {
+                            navigate("/newtask", { replace: true });
+                        }}
+                    >
+                        +
+                    </button>
+                    <h1>Home</h1>
+                    <hr />
+                    {isMobile && (
+                        <>
+                            <h2 className={styles.sectionTitle}>Tags</h2>
+                            <div className={styles.tags}>
+                                <CreateTag
+                                    cryptoKey={key as CryptoKey}
+                                    uponCreation={() => {
+                                        getTags();
+                                    }}
+                                />
+                                {tags.map((tagObject) => (
+                                    <Tag
+                                        key={tagObject.id}
+                                        cryptoKey={key as CryptoKey}
+                                        selected={selectedTag === tagObject.id}
+                                        tag={tagObject}
+                                        onClick={() => {
+                                            if (selectedTag === tagObject.id) {
+                                                // if tag is selected, then set to 0
+                                                setSelectedTag(0);
+                                                getTasks(0);
+                                                return;
+                                            }
+                                            getTasks(tagObject.id);
+                                        }}
+                                        onCogClick={() => {
+                                            setEditingTag(tagObject);
+                                            setOpenTagSlideover(true);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    <h2 className={styles.sectionTitle}>Recurring</h2>
+                    {/* <Check selected={false} /> */}
+                    <h2 className={styles.sectionTitle}>Upcoming</h2>
+                    {upcomingTasks.map((task) => (
+                        <TaskComponent
+                            onClick={() => {
+                                setSelectedTask(task);
+                                setOpenTaskSlideover(true);
+                            }}
+                            key={task.id}
+                            cryptoKey={key as CryptoKey}
+                            task={task}
+                        />
+                    ))}
+                    <h2 className={styles.sectionTitle}>General</h2>
+                    {tasks.map((task) => (
+                        <TaskComponent
+                            onClick={() => {
+                                setSelectedTask(task);
+                                setOpenTaskSlideover(true);
+                            }}
+                            key={task.id}
+                            cryptoKey={key as CryptoKey}
+                            task={task}
+                        />
+                    ))}
+                    <h2 className={styles.sectionTitle}>Completed</h2>
+                    {completedTasks.map((task) => (
+                        <TaskComponent
+                            onClick={() => {
+                                setSelectedTask(task);
+                                setOpenTaskSlideover(true);
+                            }}
+                            key={task.id}
+                            cryptoKey={key as CryptoKey}
+                            task={task}
+                        />
+                    ))}
+                    <br />
+                </div>
+                <SlidingPane
+                    isOpen={openTaskSlideover}
+                    title="Task Details"
+                    onRequestClose={() => {
+                        // triggered on "<" on left top click or on outside click
                         getTasks(selectedTag);
                         setOpenTaskSlideover(false);
                     }}
-                />
-            </SlidingPane>
-            <SlidingPane
-                isOpen={openTagSlideover}
-                title="Tag Details"
-                onRequestClose={() => {
-                    // triggered on "<" on left top click or on outside click
-                    getTags();
-                    setOpenTagSlideover(false);
-                }}
-            >
-                <TagSlideover
-                    cryptoKey={key as CryptoKey}
-                    tag={editingTag as TagInterface}
-                    closeSlideover={() => {
+                >
+                    <TaskSlideover
+                        cryptoKey={key as CryptoKey}
+                        task={selectedTask as Task}
+                        closeSlideover={() => {
+                            getTasks(selectedTag);
+                            setOpenTaskSlideover(false);
+                        }}
+                    />
+                </SlidingPane>
+                <SlidingPane
+                    isOpen={openTagSlideover}
+                    title="Tag Details"
+                    onRequestClose={() => {
+                        // triggered on "<" on left top click or on outside click
                         getTags();
                         setOpenTagSlideover(false);
                     }}
-                />
-            </SlidingPane>
+                >
+                    <TagSlideover
+                        cryptoKey={key as CryptoKey}
+                        tag={editingTag as TagInterface}
+                        closeSlideover={() => {
+                            getTags();
+                            setOpenTagSlideover(false);
+                        }}
+                    />
+                </SlidingPane>
+            </div>
         </>
     );
 };

@@ -1,6 +1,8 @@
 .parent {
     height: 100%;
     padding: 1rem;
+    overflow-y: auto;
+    
 }
 
 .tags {
@@ -12,8 +14,11 @@
 }
 
 .newTaskButton {
-    width: 10rem;
+    width: 2.5rem;
     height: 2.5rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     border-radius: 500px;
     background-color: #0249FF;
     font-weight: bold;
@@ -22,6 +27,9 @@
     font-size: 1.25rem; 
     font-family: Inter, sans-serif;
     box-shadow: 0px 24px 48px 0 rgba(0, 0, 0, 0.16);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .tagsParent {

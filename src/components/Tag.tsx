@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tag } from "src/interfaces/tag";
-import { decrypt } from "src/utils/aes";
 import styles from "../styles/Tag.module.scss";
 
 import { FaCog } from "react-icons/fa";
+
+import { decryptName } from "src/utils/tags";
 
 const TagComponent = ({
     tag,
@@ -20,20 +21,13 @@ const TagComponent = ({
 }) => {
     const [decryptedName, setDecryptedName] = useState<string>("");
 
-    const decryptName = async () => {
-        const decryptedName = await decrypt(
-            { data: tag.nameCiphertext, iv: tag.nameIV },
-            cryptoKey
-        );
-
-        const dec = new TextDecoder();
-
-        setDecryptedName(dec.decode(decryptedName));
-    };
-
     useEffect(() => {
-        decryptName();
+        init();
     }, []);
+
+    const init = async () => {
+        setDecryptedName(await decryptName(tag, cryptoKey));
+    };
 
     return (
         <>
