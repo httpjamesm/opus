@@ -429,7 +429,7 @@ const Slideover = ({
             <h3 style={{ marginTop: "1rem" }}>Tags</h3>
             <div className={styles.tags}>
                 <CreateTag
-                    cryptoKey={_itemKey as CryptoKey}
+                    cryptoKey={cryptoKey as CryptoKey}
                     uponCreation={() => {
                         getTags();
                     }}
