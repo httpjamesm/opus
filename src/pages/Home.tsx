@@ -1,7 +1,6 @@
 import Tag from "../components/Tag";
 import styles from "../styles/Home.module.scss";
 
-import Check from "../components/Check";
 import { useEffect, useState } from "react";
 import { Task } from "src/interfaces/task";
 import TaskComponent from "../components/Task";
@@ -13,7 +12,6 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import TaskSlideover from "src/components/TaskSlideover";
-import { Link } from "react-router-dom";
 import TagSlideover from "src/components/TagSlideover";
 
 import checkAuthStatus from "src/utils/checkAuthStatus";
@@ -291,6 +289,7 @@ const Home = () => {
                     onRequestClose={() => {
                         // triggered on "<" on left top click or on outside click
                         getTasks(selectedTag);
+                        getTags();
                         setOpenTaskSlideover(false);
                     }}
                 >
