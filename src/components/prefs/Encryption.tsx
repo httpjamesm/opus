@@ -44,7 +44,7 @@ const Encryption = () => {
             <div className={styles.group + " " + styles.vertical}>
                 <b>Encryption Source</b>
                 <p>
-                    Encrypted AES-256-GCM Master Keys and AES-256-GCM File Keys
+                    Encrypted AES-256-GCM Master Keys and AES-256-GCM Item Keys
                 </p>
             </div>
             <div className={styles.group + " " + styles.vertical}>
