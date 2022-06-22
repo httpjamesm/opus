@@ -33,6 +33,17 @@
     align-items: center;
     cursor: pointer;
     font-size: 2rem;
+
+    transition-duration: .15s;
+
+    &:hover {
+        background-color: #2361ff;
+    }
+
+    &:active {
+        background-color: #2352ca;
+    }
+
 }
 
 .tagsParent {

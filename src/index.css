@@ -42,11 +42,12 @@ h5 {
 
 input {
     border: none;
-    border-bottom: 2px solid var(--text);
+    background: rgba(185, 185, 185, 0.507);
+    padding: .5rem;
+    border-radius: 10px;
+    box-sizing: border-box;
     font-size: 1.5rem;
     font-family: Inter, sans-serif;
-
-    background: transparent;
 
     color: var(--text);
 
@@ -58,11 +59,16 @@ input:focus {
 }
 
 textarea {
-    border: 2px solid var(--text);
+    border: none;
+    resize: none;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    
     font-size: 1.5rem;
     font-family: Inter, sans-serif;
 
-    background: transparent;
+    background: rgba(185, 185, 185, 0.507);
 
     color: var(--text);
 
@@ -85,9 +91,9 @@ textarea:focus {
 
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-    color: #989898;
+    color: #8a8a8a;
     font-size: 1.5rem;
-    font-weight: bold;
+    /* font-weight: bold; */
     font-family: Inter, sans-serif;
 }
 

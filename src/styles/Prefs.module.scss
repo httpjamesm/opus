@@ -1,12 +1,12 @@
+@import "src/styles/Buttons.module.scss";
+
 .heading {
     text-transform: uppercase;
     font-weight: normal;
-    padding-left: 1rem;
     margin-top: 1rem;
 }
 
 .group {
-    padding-left: 1rem;
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -28,7 +28,6 @@
 }
 
 .action {
-    padding-left: 1rem;
     color: rgb(75, 75, 255);
     display: flex;
     align-items: center;

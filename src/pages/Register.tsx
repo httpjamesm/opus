@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 
+import { BsPersonPlusFill } from "react-icons/bs";
+
 const Register = () => {
     const navigate = useNavigate();
 
@@ -132,13 +134,16 @@ const Register = () => {
                     ref={captchaRef}
                 />
 
-                <button
-                    className={styles.objectiveButton}
-                    onClick={handleRegisterClick}
-                >
-                    Register
-                </button>
-                <p style={{ fontSize: ".7rem", marginTop: ".5rem" }}>
+                <div className={styles.objectiveParent}>
+                    <button
+                        className={styles.objectiveButton}
+                        onClick={handleRegisterClick}
+                    >
+                        <BsPersonPlusFill />
+                        Register
+                    </button>
+                </div>
+                <p style={{ fontSize: "1rem", marginTop: ".5rem" }}>
                     This site is protected by hCaptcha and its{" "}
                     <a href="https://www.hcaptcha.com/privacy" target="_blank">
                         Privacy Policy

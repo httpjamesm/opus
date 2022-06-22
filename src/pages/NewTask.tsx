@@ -22,6 +22,8 @@ import { AiOutlineArrowLeft } from "react-icons/ai";
 import checkAuthStatus from "src/utils/checkAuthStatus";
 import { recurringValues } from "src/utils/recurringValues";
 
+import { AiOutlinePlus } from "react-icons/ai";
+
 const NewTask = () => {
     const navigate = useNavigate();
 
@@ -303,7 +305,7 @@ Maybe evergreen?`}
                     </>
                 )}
 
-                <h2>Tags</h2>
+                <h2 style={{ marginTop: "1rem" }}>Tags</h2>
                 <div className={styles.tags}>
                     <CreateTag
                         cryptoKey={key as CryptoKey}
@@ -335,9 +337,15 @@ Maybe evergreen?`}
                         />
                     ))}
                 </div>
-                <button className={styles.objectiveButton} onClick={createTask}>
-                    Done
-                </button>
+                <div className={styles.objectiveParent}>
+                    <button
+                        className={styles.objectiveButton}
+                        onClick={createTask}
+                    >
+                        <AiOutlinePlus />
+                        Done
+                    </button>
+                </div>
             </div>
             <ToastContainer />
         </>
