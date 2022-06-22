@@ -2,12 +2,14 @@
     --background: #fff;
     --text: #000;
     --sidebar: #8886ff;
+    --highlight-text: rgb(41, 41, 41);
 }
 
 [data-theme="dark"] {
     --background: #181818;
     --text: #fff;
     --sidebar: #31009b;
+    --highlight-text: rgb(196, 196, 196);
 }
 
 .slide-pane__header {

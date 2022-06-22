@@ -27,18 +27,17 @@
             .text {
                 width: 100%;
                 height: 2rem;
-                
+
                 display: flex;
                 align-items: center;
 
                 cursor: pointer;
-                
-                
+
                 p {
                     margin: 0;
                 }
             }
-            
+
             margin-top: 0.5rem;
 
             border-radius: 10px;
@@ -55,12 +54,33 @@
 .cog {
     display: flex;
     align-items: center;
-    padding: .25rem;
-    margin-left: .5rem;
+    padding: 0.25rem;
+    margin-left: 0.5rem;
 
     &:hover {
         cursor: pointer;
         background-color: #cccccc;
         border-radius: 10px;
+    }
+}
+
+.prefs {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    cursor: pointer;
+    padding: 1rem;
+
+    user-select: none;
+
+    color: var(--text);
+
+    &:hover {
+        color: var(--highlight-text);
     }
 }

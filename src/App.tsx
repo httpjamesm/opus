@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import NewTask from "./pages/NewTask";
+import Prefs from "./pages/Prefs";
 
 const App = () => {
     return (
@@ -16,6 +17,7 @@ const App = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/newtask" element={<NewTask />} />
+                    <Route path="/prefs" element={<Prefs />} />
                 </Routes>
             </BrowserRouter>
         </>

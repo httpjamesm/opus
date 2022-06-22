@@ -16,8 +16,11 @@ import TagSlideover from "src/components/TagSlideover";
 
 import checkAuthStatus from "src/utils/checkAuthStatus";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DesktopSidebar from "src/components/DesktopSidebar";
+
+import { AiOutlinePlus } from "react-icons/ai";
+import { FaCog } from "react-icons/fa";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -191,15 +194,17 @@ const Home = () => {
                         setSelectedTagOutside={setEditingTag}
                     />
                 )}
-                <div className={styles.parent}>
-                    <button
-                        className={styles.newTaskButton}
-                        onClick={() => {
-                            navigate("/newtask", { replace: true });
-                        }}
-                    >
-                        +
+                <Link to="/newtask">
+                    <button className={styles.newTaskButton}>
+                        <AiOutlinePlus />
                     </button>
+                </Link>
+                <div className={styles.parent}>
+                    <Link to="/prefs">
+                        <button className={styles.prefsButton}>
+                            <FaCog />
+                        </button>
+                    </Link>
                     <h1>Home</h1>
                     <hr />
                     {isMobile && (

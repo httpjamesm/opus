@@ -3,6 +3,7 @@ import { Tag } from "src/interfaces/tag";
 import styles from "src/styles/DesktopSidebar.module.scss";
 import { decryptName } from "src/utils/tags";
 import { FaCog } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const DesktopTag = ({
     tag,
@@ -105,6 +106,12 @@ const DesktopSidebar = ({
                         />
                     ))}
                 </div>
+                <Link to="/prefs">
+                    <div className={styles.prefs}>
+                        <FaCog />
+                        <span>Preferences</span>
+                    </div>
+                </Link>
             </div>
         </>
     );
