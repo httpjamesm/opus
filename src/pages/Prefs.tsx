@@ -1,6 +1,6 @@
 import styles from "src/styles/Prefs.module.scss";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Theme from "src/components/prefs/Theme";
 import Encryption from "src/components/prefs/Encryption";
@@ -12,7 +12,21 @@ import { AiOutlineArrowLeft } from "react-icons/ai";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { useEffect } from "react";
+
+import checkAuthStatus from "src/utils/checkAuthStatus";
+
 const Prefs = () => {
+    const navigate = useNavigate();
+
+    const init = async () => {
+        if (!(await checkAuthStatus())) return navigate("/", { replace: true });
+    };
+
+    useEffect(() => {
+        init();
+    }, []);
+
     return (
         <>
             <div className={styles.wrapper}>
