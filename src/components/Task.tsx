@@ -219,6 +219,7 @@ const TaskComponent = ({
                                 marginTop: 0,
                                 fontWeight: "bold",
                                 fontSize: "1.25rem",
+                                cursor: "pointer",
                             }}
                         >
                             {decryptedName}

@@ -81,10 +81,13 @@ const Home = () => {
                 response.data.map(async (task) => {
                     if (task.dueDateCiphertext) {
                         if (task.recurringCiphertext) {
-                            recurringTasksLocal = [...recurringTasksLocal, task];
+                            recurringTasksLocal = [
+                                ...recurringTasksLocal,
+                                task,
+                            ];
                             return;
                         }
-                        
+
                         upcomingTasksLocal = [...upcomingTasksLocal, task];
                         return;
                     }
@@ -286,18 +289,18 @@ const Home = () => {
                 <SlidingPane
                     isOpen={openTaskSlideover}
                     title="Task Details"
-                    onRequestClose={() => {
+                    onRequestClose={async () => {
                         // triggered on "<" on left top click or on outside click
-                        getTasks(selectedTag);
-                        getTags();
+                        await getTasks(selectedTag);
+                        await getTags();
                         setOpenTaskSlideover(false);
                     }}
                 >
                     <TaskSlideover
                         cryptoKey={key as CryptoKey}
                         task={selectedTask as Task}
-                        closeSlideover={() => {
-                            getTasks(selectedTag);
+                        closeSlideover={async () => {
+                            await getTasks(selectedTag);
                             setOpenTaskSlideover(false);
                         }}
                     />
