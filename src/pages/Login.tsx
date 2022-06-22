@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -11,6 +11,7 @@ import PBKDF2 from "crypto-js/pbkdf2";
 import { db } from "src/utils/db";
 
 import { useNavigate } from "react-router-dom";
+import checkAuthStatus from "src/utils/checkAuthStatus";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -19,7 +20,11 @@ const Login = () => {
 
     const [password, setPassword] = useState<string>("");
 
-    const doRegister = async () => {
+    useEffect(() => {
+        checkLoginStatus();
+    }, []);
+
+    const doLogin = async () => {
         // get data
         const dataRequest = await fetch(
             `${process.env.REACT_APP_API_URL}/auth/logindata?username=${username}`
@@ -111,6 +116,12 @@ const Login = () => {
         navigate("/home", { replace: true });
     };
 
+    const checkLoginStatus = async () => {
+        if (await checkAuthStatus()) {
+            navigate("/home", { replace: true });
+        }
+    };
+
     return (
         <>
             <div className={styles.parent}>
@@ -127,7 +138,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                 />
 
-                <button className={styles.objectiveButton} onClick={doRegister}>
+                <button className={styles.objectiveButton} onClick={doLogin}>
                     Login
                 </button>
             </div>
