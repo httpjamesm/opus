@@ -187,8 +187,9 @@ const ChangePassword = () => {
             <div className={styles.group}>
                 <p>STRENGTH</p>
                 <meter
-                    max="100"
-                    min="0"
+                    max={100}
+                    min={0}
+                    low={40}
                     value={passwordScore}
                     className={styles.passwordMeter}
                 />

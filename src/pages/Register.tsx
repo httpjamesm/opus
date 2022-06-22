@@ -123,8 +123,9 @@ const Register = () => {
                 <div className={styles.group}>
                     <p>STRENGTH</p>
                     <meter
-                        max="100"
-                        min="0"
+                        max={100}
+                        low={40}
+                        min={0}
                         value={passwordScore}
                         className={styles.passwordMeter}
                     />
