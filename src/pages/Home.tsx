@@ -314,6 +314,7 @@ const Home = () => {
                 <SlidingPane
                     isOpen={openTagSlideover}
                     title="Tag Details"
+                    className={styles.slideover}
                     onRequestClose={() => {
                         // triggered on "<" on left top click or on outside click
                         getTags();
