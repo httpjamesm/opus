@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/Register.module.scss";
 
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import { decrypt, deriveKeypair } from "src/utils/aes";
 
 // @ts-ignore
@@ -11,6 +11,9 @@ import PBKDF2 from "crypto-js/pbkdf2";
 import { db } from "src/utils/db";
 
 import { useNavigate } from "react-router-dom";
+import checkAuthStatus from "src/utils/checkAuthStatus";
+
+import { BsPersonCheckFill } from "react-icons/bs";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -19,7 +22,11 @@ const Login = () => {
 
     const [password, setPassword] = useState<string>("");
 
-    const doRegister = async () => {
+    useEffect(() => {
+        checkLoginStatus();
+    }, []);
+
+    const doLogin = async () => {
         // get data
         const dataRequest = await fetch(
             `${process.env.REACT_APP_API_URL}/auth/logindata?username=${username}`
@@ -111,6 +118,12 @@ const Login = () => {
         navigate("/home", { replace: true });
     };
 
+    const checkLoginStatus = async () => {
+        if (await checkAuthStatus()) {
+            navigate("/home", { replace: true });
+        }
+    };
+
     return (
         <>
             <div className={styles.parent}>
@@ -126,10 +139,15 @@ const Login = () => {
                     type="password"
                     onChange={(e) => setPassword(e.target.value)}
                 />
-
-                <button className={styles.objectiveButton} onClick={doRegister}>
-                    Login
-                </button>
+                <div className={styles.objectiveParent}>
+                    <button
+                        className={styles.objectiveButton}
+                        onClick={doLogin}
+                    >
+                        <BsPersonCheckFill />
+                        Login
+                    </button>
+                </div>
             </div>
             <ToastContainer />
         </>

@@ -1,0 +1,55 @@
+@import "src/styles/Buttons.module.scss";
+
+.heading {
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-top: 1rem;
+}
+
+.group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-weight: bold;
+}
+
+.group.vertical {
+    flex-direction: column;
+    font-weight: normal;
+    align-items: flex-start;
+
+    p {
+        margin: 0;
+    }
+
+    b {
+        margin-top: .5rem;
+    }
+}
+
+.action {
+    color: rgb(75, 75, 255);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+}
+
+.backButton {
+    color: rgb(104, 104, 104);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+}
+
+.wrapper {
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.passwordMeter {
+    width: 100%;
+}

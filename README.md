@@ -19,10 +19,16 @@ Before sending off your master key to Opus' server, it is client-side encrypted 
 Opus uses a username and password to authenticate you.
 
 #### Password
+
 Since Opus uses end-to-end encryption, the user's password cannot leave their device without being hashed. Salted PBKDF2 is used to hash the password on the client before being shipped off to Opus. On subsequent logins, the server provides the password salt and the client uses the salt to hash the password. This hashed password is then sent to the server for authentication.
 
 #### Sessions
+
 Opus uses JWT to wrap a unique session identifier. This identifier doesn't contain any personal information, but it is attached to your account on the server.
+
+#### Password Changes
+
+Thanks to Opus' key wrapping, passwords can be changed with relative ease. Instead of needing to re-encrypt every item, the client only needs to re-encrypt the master key and hash the new password. New unique salts are generated for both of these new values to provide better security.
 
 ### AES Encryption
 

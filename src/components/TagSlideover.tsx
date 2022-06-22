@@ -116,7 +116,7 @@ const TagSlideover = ({
                     setCachedDecryptedName(e.target.value);
                 }}
             />
-            <h3>Color</h3>
+            <h3 style={{ marginTop: "1rem" }}>Color</h3>
             <br />
             <CirclePicker
                 color={color}

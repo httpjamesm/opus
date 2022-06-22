@@ -1,7 +1,6 @@
 import Tag from "../components/Tag";
 import styles from "../styles/Home.module.scss";
 
-import Check from "../components/Check";
 import { useEffect, useState } from "react";
 import { Task } from "src/interfaces/task";
 import TaskComponent from "../components/Task";
@@ -13,13 +12,15 @@ import { Tag as TagInterface } from "src/interfaces/tag";
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import TaskSlideover from "src/components/TaskSlideover";
-import { Link } from "react-router-dom";
 import TagSlideover from "src/components/TagSlideover";
 
 import checkAuthStatus from "src/utils/checkAuthStatus";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DesktopSidebar from "src/components/DesktopSidebar";
+
+import { AiOutlinePlus } from "react-icons/ai";
+import { FaCog } from "react-icons/fa";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -83,10 +84,13 @@ const Home = () => {
                 response.data.map(async (task) => {
                     if (task.dueDateCiphertext) {
                         if (task.recurringCiphertext) {
-                            recurringTasksLocal = [...recurringTasksLocal, task];
+                            recurringTasksLocal = [
+                                ...recurringTasksLocal,
+                                task,
+                            ];
                             return;
                         }
-                        
+
                         upcomingTasksLocal = [...upcomingTasksLocal, task];
                         return;
                     }
@@ -190,15 +194,17 @@ const Home = () => {
                         setSelectedTagOutside={setEditingTag}
                     />
                 )}
-                <div className={styles.parent}>
-                    <button
-                        className={styles.newTaskButton}
-                        onClick={() => {
-                            navigate("/newtask", { replace: true });
-                        }}
-                    >
-                        +
+                <Link to="/newtask">
+                    <button className={styles.newTaskButton}>
+                        <AiOutlinePlus />
                     </button>
+                </Link>
+                <div className={styles.parent}>
+                    <Link to="/prefs">
+                        <button className={styles.prefsButton}>
+                            <FaCog />
+                        </button>
+                    </Link>
                     <h1>Home</h1>
                     <hr />
                     {isMobile && (
@@ -288,17 +294,19 @@ const Home = () => {
                 <SlidingPane
                     isOpen={openTaskSlideover}
                     title="Task Details"
-                    onRequestClose={() => {
+                    onRequestClose={async () => {
                         // triggered on "<" on left top click or on outside click
-                        getTasks(selectedTag);
+                        await getTasks(selectedTag);
+                        await getTags();
                         setOpenTaskSlideover(false);
                     }}
+                    className={styles.slideover}
                 >
                     <TaskSlideover
                         cryptoKey={key as CryptoKey}
                         task={selectedTask as Task}
-                        closeSlideover={() => {
-                            getTasks(selectedTag);
+                        closeSlideover={async () => {
+                            await getTasks(selectedTag);
                             setOpenTaskSlideover(false);
                         }}
                     />
@@ -306,6 +314,7 @@ const Home = () => {
                 <SlidingPane
                     isOpen={openTagSlideover}
                     title="Tag Details"
+                    className={styles.slideover}
                     onRequestClose={() => {
                         // triggered on "<" on left top click or on outside click
                         getTags();
