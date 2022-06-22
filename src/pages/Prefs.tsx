@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import Theme from "src/components/prefs/Theme";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import Encryption from "src/components/prefs/Encryption";
 
 const Prefs = () => {
     return (
@@ -16,6 +17,7 @@ const Prefs = () => {
                     </p>
                 </Link>
                 <Theme />
+                <Encryption />
             </div>
         </>
     );
