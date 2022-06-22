@@ -295,6 +295,7 @@ const Home = () => {
                         await getTags();
                         setOpenTaskSlideover(false);
                     }}
+                    className={styles.slideover}
                 >
                     <TaskSlideover
                         cryptoKey={key as CryptoKey}

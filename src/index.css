@@ -1,44 +1,77 @@
-html, body, #root {
+:root {
+    --background: #fff;
+    --text: #000;
+    --sidebar: #8886ff;
+}
+
+[data-theme="dark"] {
+    --background: #181818;
+    --text: #fff;
+    --sidebar: #31009b;
+}
+
+.slide-pane__header {
+    background: var(--background) !important;
+    color: var(--text);
+}
+
+html,
+body,
+#root {
     height: 100%;
     width: 100%;
     margin: 0;
 }
 
 body {
-	margin: 0;
-	font-family: Inter, sans-serif;
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     margin: 0;
 }
 
 input {
-	border: none;
-	border-bottom: 2px solid black;
-	font-size: 1.5rem;
-	font-family: Inter, sans-serif;
+    border: none;
+    border-bottom: 2px solid var(--text);
+    font-size: 1.5rem;
+    font-family: Inter, sans-serif;
+
+    background: transparent;
+
+    color: var(--text);
 
     margin-top: 1rem;
 }
 
 input:focus {
-	outline: none;
+    outline: none;
 }
 
 textarea {
-    border: 2px solid black;
+    border: 2px solid var(--text);
     font-size: 1.5rem;
-	font-family: Inter, sans-serif;
+    font-family: Inter, sans-serif;
+
+    background: transparent;
+
+    color: var(--text);
 
     margin-top: 1rem;
 
-    padding: .5rem;
+    padding: 0.5rem;
 
     box-sizing: border-box;
 
     border-radius: 10px;
-    
+
     width: 100%;
 
     height: 10rem;
@@ -48,11 +81,12 @@ textarea:focus {
     outline: none;
 }
 
-input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
-	color: #989898;
-	font-size: 1.5rem;
-	font-weight: bold;
-	font-family: Inter, sans-serif;
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #989898;
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: Inter, sans-serif;
 }
 
 a {
@@ -70,13 +104,13 @@ select:focus {
 }
 
 @font-face {
-	font-family: Inter;
-	font-weight: normal;
-	src: url('./assets/Inter/Inter-VariableFont_slnt\,wght.ttf');
+    font-family: Inter;
+    font-weight: normal;
+    src: url("./assets/Inter/Inter-VariableFont_slnt\,wght.ttf");
 }
 
 @font-face {
-	font-family: Inter;
-	font-weight: bold;
-	src: url('./assets/Inter/static/Inter-Bold.ttf');
+    font-family: Inter;
+    font-weight: bold;
+    src: url("./assets/Inter/static/Inter-Bold.ttf");
 }
