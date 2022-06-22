@@ -37,3 +37,23 @@
     justify-content: flex-end;
     width: 100%;
 }
+
+.destructiveButton {
+    @extend .objectiveButton;
+
+    background-color: transparent;
+
+    color: red;
+    border: 2px solid red;
+
+    &:hover {
+        background-color: red;
+        color: white;
+    }
+
+    &:active {
+        background-color: #cc3838;
+        border: 2px solid #cc3838;
+        color: white;
+    }
+}

@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import Check from "src/components/Check";
 import styles from "src/styles/Prefs.module.scss";
-
-import { AiOutlineReload } from "react-icons/ai";
 
 const Encryption = () => {
     const [encryptedItems, setEncryptedItems] = useState<string>("Counting...");

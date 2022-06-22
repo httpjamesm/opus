@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Theme from "src/components/prefs/Theme";
 import Encryption from "src/components/prefs/Encryption";
 import ChangePassword from "src/components/prefs/ChangePassword";
+import Sessions from "src/components/prefs/Sessions";
 
 import { AiOutlineArrowLeft } from "react-icons/ai";
 
@@ -25,6 +26,7 @@ const Prefs = () => {
                 <Encryption />
                 <ChangePassword />
                 <ToastContainer />
+                <Sessions />
             </div>
         </>
     );
