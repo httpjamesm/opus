@@ -1,7 +1,7 @@
 import styles from "src/styles/Prefs.module.scss";
 
 import { FaLock } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,6 +14,7 @@ import { createSalt, deriveKeypair, encrypt } from "src/utils/aes";
 import { uint8ArrayToBase64 } from "src/utils/b64";
 
 import { useNavigate } from "react-router-dom";
+import { scorePassword } from "src/utils/password";
 
 const ChangePassword = () => {
     const navigate = useNavigate();
@@ -21,6 +22,13 @@ const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+    const [passwordScore, setPasswordScore] = useState<number>(0);
+
+    useEffect(() => {
+        const newScore = scorePassword(newPassword);
+        setPasswordScore(newScore);
+    }, [newPassword]);
 
     const changePassword = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
@@ -176,6 +184,15 @@ const ChangePassword = () => {
                 placeholder="New Password"
                 onChange={(e) => setNewPassword(e.target.value)}
             />
+            <div className={styles.group}>
+                <p>STRENGTH</p>
+                <meter
+                    max="100"
+                    min="0"
+                    value={passwordScore}
+                    className={styles.passwordMeter}
+                />
+            </div>
             <input
                 type="password"
                 placeholder="Confirm Password"
