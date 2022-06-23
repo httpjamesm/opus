@@ -161,11 +161,11 @@ const Register = () => {
                 </div>
                 <p style={{ fontSize: "1rem", marginTop: ".5rem" }}>
                     This site is protected by hCaptcha and its{" "}
-                    <a href="https://www.hcaptcha.com/privacy" target="_blank">
+                    <a href="https://www.hcaptcha.com/privacy" target="_blank" rel="noreferrer">
                         Privacy Policy
                     </a>{" "}
                     and{" "}
-                    <a href="https://www.hcaptcha.com/terms" target="_blank">
+                    <a href="https://www.hcaptcha.com/terms" target="_blank" rel="noreferrer">
                         Terms of Service
                     </a>{" "}
                     apply.
