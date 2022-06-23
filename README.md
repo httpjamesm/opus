@@ -2,6 +2,24 @@
 
 Opus is a functional, minimal and secure end-to-end encrypted task manager. Store grocery lists, to-do lists, shopping wishlists and more with the peace of mind that your data is truly yours.
 
+## Screenshots
+
+Opus' UI and UX were designed with the Apple [human interface guidelines](https://developer.apple.com/design/human-interface-guidelines/guidelines/overview/) in mind.
+
+![Landing - Mobile](./screenshots/mobile/landing.png)
+
+![New Task - Mobile](./screenshots/mobile/new_task.png)
+
+![Task Editing - Mobile](./screenshots/mobile/task_editing.png)
+
+![Tag Editing - Mobile](./screenshots/mobile/tag_editing.png)
+
+![Settings - Mobile](./screenshots/mobile/settings.png)
+
+![Home - Desktop](./screenshots/desktop/sidebar.png)
+
+![Dark Home - Mobile](./screenshots/mobile/dark_theme.png)
+
 ## Security Architecture
 
 ### Key Encryption
